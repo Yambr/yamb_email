@@ -20,7 +20,6 @@ namespace Yambr.RabbitMQ.Services.Impl
     // ReSharper disable once InconsistentNaming
     public class RabbitMQService : IRabbitMQService
     {
-        private const string RabbitMQServiceRegion = nameof(RabbitMQService);
         private readonly ConcurrentDictionary<string, IEnumerable<IRabbitMessageHandler>> _map;
         private readonly IEnumerable<IRabbitMessageHandler> _handlers;
         private readonly IEnumerable<IRabbitDeclareHandler> _rabbitDeclareHandlers;
@@ -32,13 +31,13 @@ namespace Yambr.RabbitMQ.Services.Impl
             IEnumerable<IRabbitMessageHandler> handlers,
             IEnumerable<IRabbitDeclareHandler> rabbitDeclareHandlers,
             RabbitMQSettings rabbitMQSettings,
-            ILoggerFactory loggerFactory)
+            ILogger<IRabbitMQService> logger)
         {
             _handlers = handlers;
             _rabbitDeclareHandlers = rabbitDeclareHandlers;
             _rabbitMQSettings = rabbitMQSettings;
+            _logger = logger;
             _map = new ConcurrentDictionary<string, IEnumerable<IRabbitMessageHandler>>();
-            _logger = loggerFactory.CreateLogger(RabbitMQServiceRegion);
             Connections = new List<IModel>();
         }
 
