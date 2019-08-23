@@ -1,37 +1,39 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Fizzler.Systems.HtmlAgilityPack;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Yambr.Analyzer.Services;
+using Yambr.Core.Helpers;
+using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.Extensions;
-using Yambr.Email.Loader.Services.Default;
+using Yambr.Email.SDK.Extensions;
 
-namespace Yambr.Email.Loader.Services
+namespace Yambr.Email.Loader.Services.Impl
 {
     public class EmailMesageService : IEmailMessageService
     {
         private readonly IMailBox _mailBox;
+        private readonly IMailAnalyzeService _mailAnalyzeService;
         private readonly ILogger _logger;
-        private readonly IRecordCollection<EmailMessage> _mailMessageCollection;
         private readonly IContactService _contactService;
         private readonly IHtmlConverterService _htmlConverterService;
-        private readonly IRecordDatabase _recordDatabase;
 
         public EmailMesageService(
             ILogger<IEmailMessageService> logger,
             IMailBox mailBox,
-            IRecordCollection<EmailMessage> mailMessageCollection,
+            IMailAnalyzeService mailAnalyzeService,
             IContactService contactService,
-            IHtmlConverterService htmlConverterService,
-            IRecordDatabase recordDatabase)
+            IHtmlConverterService htmlConverterService)
         {
             _contactService = contactService;
             _htmlConverterService = htmlConverterService;
-            _recordDatabase = recordDatabase;
             _mailBox = mailBox;
+            _mailAnalyzeService = mailAnalyzeService;
             _logger = logger;
-            _mailMessageCollection = mailMessageCollection;
         }
 
         /// <summary>
@@ -53,10 +55,7 @@ namespace Yambr.Email.Loader.Services
         {
             var emailMessage = await GetOrCreateMessageAsync(message);
             AddOwner(emailMessage);
-            if (emailMessage.HasUnsaved)
-            {
-                await CreateOrUpdateOneAsync(emailMessage);
-            }
+            await SaveMessageAsync(emailMessage);
         }
 
         #region Сохранение
@@ -66,11 +65,9 @@ namespace Yambr.Email.Loader.Services
         /// </summary>
         /// <param name="emailMessage"></param>
         /// <returns></returns>
-        private async Task CreateOrUpdateOneAsync(EmailMessage emailMessage)
+        private async Task SaveMessageAsync(EmailMessage emailMessage)
         {
-            var filterDefinitionBuilder = new FilterDefinitionBuilder<EmailMessage>();
-            //запишем что по Email определяем
-            await _mailMessageCollection.CreateOrUpdateOneAsync(emailMessage, filterDefinition: filterDefinitionBuilder.Eq(c => c.Hash, emailMessage.Hash));
+            //TODO save
         }
        
         /// <summary>
@@ -80,12 +77,26 @@ namespace Yambr.Email.Loader.Services
         /// <returns></returns>
         private async Task<EmailMessage> GetOrCreateMessageAsync(MimeMessage message)
         {
-            // вычислим хэш сообщения
-            var messageHash = new EmailMessageSummary(message).GetHashByJson();
+            var messageHash = MessageHash(message);
             _logger.Info($"Сообщение от {message.Date} хэш {messageHash}");
             //попробуем получить сообщение по хеш или создадим его
             return await GetMessageByHashAsync(messageHash)
                    ?? await CreateMessageAsync(message, messageHash);
+        }
+
+        private static string MessageHash(MimeMessage message)
+        {
+// вычислим хэш сообщения
+            var messageSummary = new EmailMessageSummary
+            {
+                IsBodyHtml = !string.IsNullOrWhiteSpace(message.HtmlBody)
+            };
+
+            messageSummary.Body = messageSummary.IsBodyHtml ? message.HtmlBody : message.TextBody;
+            messageSummary.DateUtc = message.Date.UtcDateTime;
+            messageSummary.Subject = message.Subject;
+            var messageHash = messageSummary.GetHashByJson();
+            return messageHash;
         }
 
         /// <summary>
@@ -93,22 +104,11 @@ namespace Yambr.Email.Loader.Services
         /// </summary>
         /// <param name="messageHash"></param>
         /// <returns></returns>
-        private async Task<EmailMessage> GetMessageByHashAsync([NotNull] string messageHash)
+        private async Task<EmailMessage> GetMessageByHashAsync(string messageHash)
         {
             if (string.IsNullOrWhiteSpace(messageHash)) throw new ArgumentNullException(nameof(messageHash));
-            var cursor = await _mailMessageCollection.FindAsync(mes => mes.Hash == messageHash,
-                new FindOptions<EmailMessage, EmailMessage>
-                {
-                    Limit = 1
-                });
-
-            while (cursor.MoveNext())
-            {
-                var em = cursor.Current.FirstOrDefault();
-                em?.ClearChangedProperties();
-                return em;
-            }
-            return null;
+           //TODO кеш
+           return null;
         }
 
         /// <summary>
@@ -129,8 +129,7 @@ namespace Yambr.Email.Loader.Services
             AddOwner(emailMessage);
             //заполнив основные поля сохраним сообщение чтобы если паралельно будет еще обрабатываться где то это сообщение то мы его уже нашли 
             // т.к. обработка дальнейшая может занять какое то время
-            await CreateOrUpdateOneAsync(emailMessage);
-            emailMessage.ClearChangedProperties();
+            await SaveMessageAsync(emailMessage);
 
             _logger.Info($"Создано сообщение {messageHash}");
             FillBody(message, emailMessage);
@@ -161,13 +160,7 @@ namespace Yambr.Email.Loader.Services
                 ? _htmlConverterService.ConvertHtml(emailMessage.Body)
                 : emailMessage.Body;
             if (string.IsNullOrWhiteSpace(text)) return;
-            //анализатор письма
-            var processor = new Processor(MailAnalyzer.ANALYZER_NAME);
-            var result = processor.Process(new SourceOfAnalysis(text));
-            //достанем только почтовые блоки
-            var emailBlocks = result.Entities.OfType<MailReferent>();
-            //достанем блок с телом
-            var bodyHeaders = emailBlocks.Where(c => c.Kind == MailKind.Body).ToList();
+            var bodyHeaders = _mailAnalyzeService.CommonHeaders(text);
             var headerMain = bodyHeaders.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(headerMain?.Text)) return;
             //сохраним
@@ -175,13 +168,13 @@ namespace Yambr.Email.Loader.Services
             bodyHeaders.Remove(headerMain);
             if (bodyHeaders.Any())
             {
-                bodyHeaders.ForEach(c =>
+                foreach (var mailReferent in bodyHeaders)
                 {
-                    if (!string.IsNullOrWhiteSpace(c.Text))
+                    if (!string.IsNullOrWhiteSpace(mailReferent.Text))
                     {
-                        emailMessage.CommonHeaders.Add(new HeaderSummaryPart(c.Text));
+                        emailMessage.CommonHeaders.Add(new HeaderSummaryPart(mailReferent.Text));
                     }
-                });
+                }
             }
 
         }
@@ -206,7 +199,7 @@ namespace Yambr.Email.Loader.Services
         private static void FillDirection(IMessagePart emailMessage)
         {
             //если в поле от есть наш пользователь значит письмо исходящее
-            if (emailMessage.From.Any(c => c.Contact != null && c.Contact.User != null))
+            if (emailMessage.From.Any(c => c.Contact?.User != null))
             {
                 emailMessage.Direction = Direction.Outcoming;
             }
@@ -214,7 +207,7 @@ namespace Yambr.Email.Loader.Services
             {
                 emailMessage.Direction
                     = //если в поле кому есть наша почта значит входящее во всех остальных случаях оно входящее
-                    emailMessage.To.Any(c => c.Contact != null && c.Contact.User != null)
+                    emailMessage.To.Any(c => c.Contact?.User != null)
                         ? Direction.Incoming
                         : Direction.Outcoming;
             }
@@ -355,6 +348,8 @@ namespace Yambr.Email.Loader.Services
         /// <returns></returns>
         private async Task SaveEmbeddedAsync(MimeMessage message, EmailMessage emailMessage)
         {
+            //TODO скачивание файла
+            /*
             var mimeEntities = message.BodyParts.OfType<MimePart>()
                 .Where(c =>
                     !string.IsNullOrWhiteSpace(c.FileName) &&
@@ -390,7 +385,7 @@ namespace Yambr.Email.Loader.Services
                     _logger.Error($"Ошибка сохранения встроенного вложения {emailMessage.DateUtc} {emailMessage.Hash}", ex);
                     throw;
                 }
-            }
+            }*/
 
         }
 
@@ -402,6 +397,8 @@ namespace Yambr.Email.Loader.Services
         /// <returns></returns>
         private async Task SaveAttachmentsAsync(MimeMessage message, EmailMessage emailMessage)
         {
+            //TODO скачивание файла
+            /*
             var gridFsBucket = new GridFSBucket(_recordDatabase, new GridFSBucketOptions { BucketName = nameof(Attachment) });
             foreach (var attachment in message.Attachments)
             {
@@ -437,7 +434,7 @@ namespace Yambr.Email.Loader.Services
                     _logger.Error($"Ошибка сохранения вложения {emailMessage.DateUtc} {emailMessage.Hash}", ex);
                     throw;
                 }
-            }
+            }*/
         }
 
         #endregion

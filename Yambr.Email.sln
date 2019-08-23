@@ -13,10 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.RabbitMQ", "Yambr.Rab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Processor", "Yambr.Email.Processor\Yambr.Email.Processor.csproj", "{D143AC31-9AD6-43E2-849A-09376031343B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Email.Common", "Yambr.Email.Common\Yambr.Email.Common.csproj", "{4FA9B369-C203-4C4E-AEC0-4E37F1839D0D}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.DistributedCache", "Yambr.DistributedCache\Yambr.DistributedCache.csproj", "{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Common", "Yambr.Email.Common\Yambr.Email.Common.csproj", "{4FA9B369-C203-4C4E-AEC0-4E37F1839D0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Email.Loader", "Yambr.Email.Loader\Yambr.Email.Loader.csproj", "{69E2681A-90F3-47BF-8229-8FA475888B8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.DistributedCache", "Yambr.DistributedCache\Yambr.DistributedCache.csproj", "{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Loader", "Yambr.Email.Loader\Yambr.Email.Loader.csproj", "{69E2681A-90F3-47BF-8229-8FA475888B8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{76A275C0-55BE-4CA8-8CFC-FA45B7E8983E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "EP.SdkCore\EP.Sdk.Core.csproj", "{DD8D4456-5A7A-4288-8993-2EACBEA40764}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Analyzer", "Yambr.Analyzer\Yambr.Analyzer.csproj", "{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Analyzer.Pullenti", "Yambr.Analyzer.Pullenti\Yambr.Analyzer.Pullenti.csproj", "{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,9 +65,24 @@ Global
 		{69E2681A-90F3-47BF-8229-8FA475888B8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69E2681A-90F3-47BF-8229-8FA475888B8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69E2681A-90F3-47BF-8229-8FA475888B8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD8D4456-5A7A-4288-8993-2EACBEA40764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD8D4456-5A7A-4288-8993-2EACBEA40764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD8D4456-5A7A-4288-8993-2EACBEA40764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD8D4456-5A7A-4288-8993-2EACBEA40764}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DD8D4456-5A7A-4288-8993-2EACBEA40764} = {76A275C0-55BE-4CA8-8CFC-FA45B7E8983E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CE233C93-AEE0-4E24-AF11-3D30D52D52F4}

@@ -2,7 +2,7 @@
 
 namespace Yambr.Email.Common.Models
 {
-    public interface IServer:IRecord
+    public interface IServer
     {
         string Host { get; set; }
         int Port { get; set; }

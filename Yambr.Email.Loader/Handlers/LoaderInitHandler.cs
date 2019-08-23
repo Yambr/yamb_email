@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Net.Mime;
+using Autofac;
+using Yambr.Email.Common.Enums;
+using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.Components;
 using Yambr.Email.Loader.ExtensionPoints;
-using Yambr.Email.Loader.Scheduler;
 using Yambr.Email.Loader.Services;
-using Yambr.Email.Loader.Services.Default;
+using Yambr.Email.Loader.Services.Impl;
+using Yambr.Loader.Services;
+using Yambr.SDK.ExtensionPoints;
 
 namespace Yambr.Email.Loader.Handlers
 {
@@ -15,10 +20,10 @@ namespace Yambr.Email.Loader.Handlers
         public int Order => 100;
         public void InitComplete()
         {
-            var logger = Application.Container.Resolve<ILog>();
+            var logger = MediaTypeNames.Application.Container.Resolve<ILog>();
             logger.Info($"{nameof(InitComplete)} в {nameof(LoaderInitHandler)}");
 
-            var scheduler = Application.Container.Resolve<IScheduler>();
+            var scheduler = MediaTypeNames.Application.Container.Resolve<IScheduler>();
             var job = new CheckMessageWorkJob();
             job.ScheduleJob(scheduler);
 

@@ -5,23 +5,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Handlers\**" />
+    <EmbeddedResource Remove="Handlers\**" />
+    <None Remove="Handlers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Services\ContactService.cs" />
     <Compile Remove="Services\ContractorService.cs" />
-    <Compile Remove="Services\IContractorService.cs" />
     <Compile Remove="Services\MailBoxService.cs" />
     <Compile Remove="Services\MessageWorkService.cs" />
     <Compile Remove="Services\PublicDomainService.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Fizzler.Systems.HtmlAgilityPack" Version="1.2.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.12" />
     <PackageReference Include="MailKit" Version="2.2.0" />
     <PackageReference Include="MimeKit" Version="2.2.0" />
     <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yambr.Analyzer\Yambr.Analyzer.csproj" />
     <ProjectReference Include="..\Yambr.Email.Common\Yambr.Email.Common.csproj" />
-    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.Email.SDK.csproj" />
+    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.SDK.csproj" />
   </ItemGroup>
 
   <ItemGroup>

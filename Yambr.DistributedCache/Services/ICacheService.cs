@@ -9,6 +9,7 @@ namespace Yambr.DistributedCache.Services
     /// </summary>
     public interface ICacheService
     {
+        //TODO Async methods
         /// <summary>
         /// Добавить или изменить элемент кэша по ключу с указанием зависимости и времени кеширования
         /// </summary>

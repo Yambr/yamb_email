@@ -1,6 +1,4 @@
-﻿using Yambr.Email.Common.Models.Default;
-
-namespace Yambr.Email.Common.Models
+﻿namespace Yambr.Email.Common.Models
 {
     public interface IMailBox : ILoadingState
     {

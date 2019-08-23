@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
-using Yambr.Email.SDK.ComponentModel;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.Email.Loader.ExtensionPoints
 {

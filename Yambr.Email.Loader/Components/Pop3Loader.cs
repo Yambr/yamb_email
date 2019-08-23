@@ -6,9 +6,8 @@ using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Services;
-using Yambr.Email.Loader.Services.Default;
-using Yambr.Email.SDK.ComponentModel;
 using Yambr.Email.SDK.Extensions;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.Email.Loader.Components
 {

@@ -1,5 +1,4 @@
 using System;
-using Yambr.Email.Common.Models.Default;
 
 namespace Yambr.Email.Common.Models
 {

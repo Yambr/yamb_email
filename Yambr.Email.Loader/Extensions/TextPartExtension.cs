@@ -22,9 +22,9 @@ namespace Yambr.Email.Loader.Extensions
 
         private static string FromBase64Text(MimePart textPart)
         {
-            var dataBytes = new byte[textPart.ContentObject.Stream.Length];
-            textPart.ContentObject.Stream.Read(dataBytes, 0, (int)textPart.ContentObject.Stream.Length);
-            var encodingOfDataBytes =GetEncoding(textPart.ContentObject.Stream) ?? Encoding.UTF8;
+            var dataBytes = new byte[textPart.Content.Stream.Length];
+            textPart.Content.Stream.Read(dataBytes, 0, (int)textPart.Content.Stream.Length);
+            var encodingOfDataBytes =GetEncoding(textPart.Content.Stream) ?? Encoding.UTF8;
             var base64String = encodingOfDataBytes.GetString(dataBytes);
             var contentBytes = Convert.FromBase64String(base64String);
             return FromBinaryText(contentBytes, textPart.ContentType?.Charset);
