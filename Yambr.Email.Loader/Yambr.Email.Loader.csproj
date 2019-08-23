@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Services\ContactService.cs" />
+    <Compile Remove="Services\ContractorService.cs" />
+    <Compile Remove="Services\IContractorService.cs" />
+    <Compile Remove="Services\MailBoxService.cs" />
+    <Compile Remove="Services\MessageWorkService.cs" />
+    <Compile Remove="Services\PublicDomainService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MailKit" Version="2.2.0" />
+    <PackageReference Include="MimeKit" Version="2.2.0" />
+    <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yambr.Email.Common\Yambr.Email.Common.csproj" />
+    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.Email.SDK.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.logging.abstractions\2.2.0\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
