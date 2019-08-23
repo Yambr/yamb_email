@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Yambr.Email.SDK.ComponentModel
+namespace Yambr.SDK.ComponentModel
 {
     /// <summary>
     /// Атрибут компонента реализующего точку расширения

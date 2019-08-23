@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Yambr.Email.SDK.ComponentModel;
-using Yambr.Email.SDK.ExtensionPoints;
 using Yambr.RabbitMQ.Services;
+using Yambr.SDK.ComponentModel;
+using Yambr.SDK.ExtensionPoints;
 
 namespace Yambr.RabbitMQ.Components
 {

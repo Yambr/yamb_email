@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Yambr.Email.SDK.ComponentModel;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.RabbitMQ.ExtensionPoints
 {

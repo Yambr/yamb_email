@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Yambr.Email.SDK.Autofac;
+using Yambr.SDK.Autofac;
 
 namespace Yambr.Email.Consumer
 {
@@ -26,9 +26,18 @@ namespace Yambr.Email.Consumer
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            if (env.IsDevelopment())
+            {
+                services.AddDistributedMemoryCache();
+            }
+            else
+            {
+                //TODO services.AddDistributedMemoryCache();
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

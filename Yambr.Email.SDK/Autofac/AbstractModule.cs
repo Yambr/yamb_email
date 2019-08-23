@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using Autofac.Builder;
-using Yambr.Email.SDK.ComponentModel;
+using Yambr.SDK.ComponentModel;
 using Module = Autofac.Module;
 
-namespace Yambr.Email.SDK.Autofac
+namespace Yambr.SDK.Autofac
 {
     public abstract class AbstractModule : Module
     {

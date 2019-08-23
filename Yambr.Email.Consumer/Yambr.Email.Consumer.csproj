@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.Email.SDK.csproj" />
+    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.SDK.csproj" />
   </ItemGroup>
 
 </Project>

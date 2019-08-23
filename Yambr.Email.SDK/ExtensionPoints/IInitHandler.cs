@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Yambr.Email.SDK.ComponentModel;
+﻿using Yambr.SDK.ComponentModel;
 
-namespace Yambr.Email.SDK.ExtensionPoints
+namespace Yambr.SDK.ExtensionPoints
 {
     [ExtensionPoint]
     public interface IInitHandler

@@ -5,13 +5,15 @@ VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Consumer", "Yambr.Email.Consumer\Yambr.Email.Consumer.csproj", "{28B5AAC9-9B53-4606-941C-090EA112B3BF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.SDK", "Yambr.Email.SDK\Yambr.Email.SDK.csproj", "{401F8BB2-60D6-461A-AF93-68FDCACA3126}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.SDK", "Yambr.Email.SDK\Yambr.SDK.csproj", "{401F8BB2-60D6-461A-AF93-68FDCACA3126}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Example", "Yambr.Email.Example\Yambr.Email.Example.csproj", "{C27F6391-48F3-4DC5-9292-AE07D5936F20}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.RabbitMQ", "Yambr.RabbitMQ\Yambr.RabbitMQ.csproj", "{C6359BB6-1F54-4F0A-9C38-9A55C3E1688D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Email.Processor", "Yambr.Email.Processor\Yambr.Email.Processor.csproj", "{D143AC31-9AD6-43E2-849A-09376031343B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Email.Processor", "Yambr.Email.Processor\Yambr.Email.Processor.csproj", "{D143AC31-9AD6-43E2-849A-09376031343B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.DistributedCache", "Yambr.DistributedCache\Yambr.DistributedCache.csproj", "{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D143AC31-9AD6-43E2-849A-09376031343B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D143AC31-9AD6-43E2-849A-09376031343B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D143AC31-9AD6-43E2-849A-09376031343B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8613EE54-90DE-427D-ACD5-1C6B905F9A9E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

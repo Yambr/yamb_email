@@ -1,4 +1,4 @@
-﻿using Yambr.Email.SDK.Autofac;
+﻿using Yambr.SDK.Autofac;
 
 namespace Yambr.Email.Processor
 {
