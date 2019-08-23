@@ -8,6 +8,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
+using Yambr.DistributedCache.Services;
 using Yambr.SDK.Autofac;
 using Yambr.SDK.ExtensionPoints;
 
@@ -35,7 +37,8 @@ namespace Yambr.Email.Example
                 initHandler.InitComplete();
             }
 
-           
+            var r = serviceProvider.GetService<ICacheService>();
+            r.Insert("test","test","testregion", TimeSpan.FromDays(1));
 
             Console.WriteLine("Hello World!");
         }
