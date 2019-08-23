@@ -4,7 +4,7 @@ using System.Text;
 using Autofac;
 using Autofac.Core;
 using Microsoft.Extensions.Configuration;
-using Yambr.Email.SDK.Autofac;
+using Yambr.SDK.Autofac;
 
 namespace Yambr.RabbitMQ
 {

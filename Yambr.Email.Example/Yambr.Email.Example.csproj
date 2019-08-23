@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
@@ -25,10 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yambr.DistributedCache\Yambr.DistributedCache.csproj" />
     <ProjectReference Include="..\Yambr.Email.Processor\Yambr.Email.Processor.csproj">
       <Private>true</Private>
     </ProjectReference>
-    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.Email.SDK.csproj" />
+    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.SDK.csproj" />
     <ProjectReference Include="..\Yambr.RabbitMQ\Yambr.RabbitMQ.csproj" />
   </ItemGroup>
 

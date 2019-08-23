@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using Autofac;
-using Autofac.Core;
 
-namespace Yambr.Email.SDK.Autofac
+namespace Yambr.SDK.Autofac
 {
     public static class ContainerBuilderExtensions
     {

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.Email.SDK.csproj" />
+    <ProjectReference Include="..\Yambr.Email.SDK\Yambr.SDK.csproj" />
     <ProjectReference Include="..\Yambr.RabbitMQ\Yambr.RabbitMQ.csproj" />
   </ItemGroup>
 

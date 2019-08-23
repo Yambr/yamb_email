@@ -6,9 +6,9 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Yambr.Email.SDK.ComponentModel;
 using Yambr.RabbitMQ.Exceptions;
 using Yambr.RabbitMQ.ExtensionPoints;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.RabbitMQ.Services.Impl
 {

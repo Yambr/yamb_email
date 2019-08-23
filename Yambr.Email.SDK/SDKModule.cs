@@ -1,11 +1,6 @@
-﻿using Autofac.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Autofac;
-using Yambr.Email.SDK.Autofac;
+﻿using Yambr.SDK.Autofac;
 
-namespace Yambr.Email.SDK
+namespace Yambr.SDK
 {
     public class SDKModule : AbstractModule
     {

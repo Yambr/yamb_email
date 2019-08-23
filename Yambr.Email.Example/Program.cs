@@ -3,10 +3,15 @@ using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
+using System.Text;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Yambr.Email.SDK.Autofac;
-using Yambr.Email.SDK.ExtensionPoints;
+using StackExchange.Redis;
+using Yambr.DistributedCache.Services;
+using Yambr.SDK.Autofac;
+using Yambr.SDK.ExtensionPoints;
 
 namespace Yambr.Email.Example
 {
@@ -32,6 +37,9 @@ namespace Yambr.Email.Example
                 initHandler.InitComplete();
             }
 
+            var r = serviceProvider.GetService<ICacheService>();
+            r.Insert("test","test","testregion", TimeSpan.FromDays(1));
+
             Console.WriteLine("Hello World!");
         }
 
@@ -43,7 +51,12 @@ namespace Yambr.Email.Example
                 {
                     opt.AddConsole();
                     opt.AddConfiguration(configuration.GetSection("Logging"));
-                }); 
+                });
+            serviceCollection.AddStackExchangeRedisCache(options =>
+            {
+                var section = configuration.GetSection(nameof(RedisCache));
+                section.Bind(options);
+            });
 
             var containerBuilder = new ContainerBuilder();
 

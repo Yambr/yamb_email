@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using RabbitMQ.Client;
-using Yambr.Email.SDK.ComponentModel;
 using Yambr.RabbitMQ;
 using Yambr.RabbitMQ.ExtensionPoints;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.Email.Processor.Components
 {
