@@ -30,13 +30,13 @@ namespace Yambr.Email.Consumer
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services, IHostingEnvironment env)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
 
-            var serviceProvider = ConfigureServices(env, services, Configuration);
+            var serviceProvider = ConfigureContainer(services, Configuration);
             var initHandlers = serviceProvider.GetServices<IInitHandler>();
             foreach (var initHandler in initHandlers)
             {
@@ -67,15 +67,11 @@ namespace Yambr.Email.Consumer
 
         }
 
-        private AutofacServiceProvider ConfigureServices(
-            IHostingEnvironment env,
+        private AutofacServiceProvider ConfigureContainer(
             IServiceCollection services,
             IConfiguration configuration)
         {
-            if (env.IsDevelopment())
-            {
-                services.AddDistributedMemoryCache();
-            }
+            services.AddDistributedMemoryCache();
             services
                 .AddLogging(opt =>
                 {

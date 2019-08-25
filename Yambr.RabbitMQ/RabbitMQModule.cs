@@ -15,7 +15,7 @@ namespace Yambr.RabbitMQ
         {
             containerBuilder.Register(c =>
                 {
-                    var configurationRoot = c.Resolve<IConfigurationRoot>();
+                    var configurationRoot = c.Resolve<IConfiguration>();
                     var rabbitMQSettings = new RabbitMQSettings();
                     configurationRoot.Bind(RabbitMQSettingsName, rabbitMQSettings);
                     return rabbitMQSettings;
