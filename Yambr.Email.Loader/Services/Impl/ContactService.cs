@@ -39,9 +39,7 @@ namespace Yambr.Email.Loader.Services.Impl
             var contact = await GetOrCreateContactAsync(normalizedEmail, mailbox.Name);
             var contactSummary = new ContactSummary(normalizedEmail, contact);
 
-          
-            await _cacheService.InsertAsync(normalizedEmail,ContactRegion, TimeSpan.FromDays(30));
-                _logger.Info($"Сохранен контакт {contact.Fio} по {mailbox.Address}");
+          _logger.Info($"Сохранен контакт {contact.Fio} по {mailbox.Address}");
            
 
             return contactSummary;
@@ -52,6 +50,7 @@ namespace Yambr.Email.Loader.Services.Impl
         /// <returns></returns>
         private async Task<Contact> GetOrCreateContactAsync(string normalizedEmail, string name)
         {
+            bool isNew = false;
             // поискали в контактах
             var contact = await GetContactByEmailAsync(normalizedEmail);
             if (contact == null)
@@ -61,6 +60,7 @@ namespace Yambr.Email.Loader.Services.Impl
                 //т.к. контакт найден среди наших или был создан 
                 //то по домену попробуем найти контрагента
                 await FillContractorAsync(normalizedEmail, contact);
+                await _cacheService.InsertAsync(normalizedEmail, contact, ContactRegion, TimeSpan.FromDays(30));
             }
             ExtractAndSetFio(contact, name);
 

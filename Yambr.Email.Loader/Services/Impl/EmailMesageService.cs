@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Autofac;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Yambr.DistributedCache.Services;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Extensions;
@@ -14,17 +15,20 @@ using Yambr.SDK.Extensions;
 namespace Yambr.Email.Loader.Services.Impl
 {
     [Service]
-    public class EmailMesageService : IEmailMessageService
+    public class EmailMessageService : IEmailMessageService
     {
         private const string EmailMesageRegion = "EmailMesage";
         private readonly ILogger _logger;
+        private readonly ICacheService _cacheService;
         private readonly ILifetimeScope _lifetimeScope;
 
-        public EmailMesageService(
+        public EmailMessageService(
             ILogger<IEmailMessageService> logger,
+            ICacheService cacheService,
             ILifetimeScope lifetimeScope)
         {
             _logger = logger;
+            _cacheService = cacheService;
             _lifetimeScope = lifetimeScope;
         }
 
@@ -49,7 +53,7 @@ namespace Yambr.Email.Loader.Services.Impl
         {
             var messageHash = message.MessageHash();
             _logger.Info($"Сообщение от {message.Date} хэш {messageHash}");
-            var emailMessage = await GetMessageByHashAsync(messageHash) ??
+            var emailMessage = await GetMessageByHashAsync(mailBox, messageHash) ??
                                await CreateMessageAsync(mailBox, message, messageHash);
         }
 
@@ -60,11 +64,11 @@ namespace Yambr.Email.Loader.Services.Impl
         /// </summary>
         /// <param name="messageHash"></param>
         /// <returns></returns>
-        private async Task<EmailMessage> GetMessageByHashAsync(string messageHash)
+        private async Task<EmailMessage> GetMessageByHashAsync(IMailBox mailBox, string messageHash)
         {
             if (string.IsNullOrWhiteSpace(messageHash)) throw new ArgumentNullException(nameof(messageHash));
-           //TODO кеш
-           return null;
+            var formattableString = MessageKey(mailBox, messageHash);
+            return await _cacheService.GetAsync<EmailMessage>(formattableString, EmailMesageRegion);
         }
 
         /// <summary>
@@ -101,9 +105,17 @@ namespace Yambr.Email.Loader.Services.Impl
                     await emailMessageHandler.OnSaveAsync(emailMessage);
                 }
             }
+
+            var formattableString = MessageKey(mailBox, messageHash);
+            await _cacheService.InsertAsync(formattableString, emailMessage, EmailMesageRegion, TimeSpan.FromDays(1));
             return emailMessage;
         }
 
+        private static string MessageKey(IMailBox mailBox, string messageHash)
+        {
+            var formattableString = $"{mailBox.Login}:{messageHash}";
+            return formattableString;
+        }
 
         #endregion
     }
