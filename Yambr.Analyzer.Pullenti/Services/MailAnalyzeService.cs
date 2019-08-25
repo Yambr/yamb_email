@@ -13,7 +13,7 @@ namespace Yambr.Analyzer.Pullenti.Services
     {
         public ICollection<IMailReferent> CommonHeaders(string text)
         {
-            using (var proc = ProcessorService.CreateProcessor())
+            using (var proc = ProcessorService.CreateSpecificProcessor(MailAnalyzer.ANALYZER_NAME))
             {
                 // анализируем текст
                 var result = proc.Process(new SourceOfAnalysis(text));

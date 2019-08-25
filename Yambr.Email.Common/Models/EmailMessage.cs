@@ -8,8 +8,6 @@ namespace Yambr.Email.Common.Models
     public class EmailMessage :  IContentItem, IBodyPart, IMessagePart, IAttachmentsPart, ITagsPart, IEmbeddedPart
     {
      
-        public EmailMessage() { }
-
         [JsonConstructor]
         public EmailMessage(
             List<MailOwnerSummary> owners,
@@ -17,7 +15,7 @@ namespace Yambr.Email.Common.Models
             List<ContactSummary> @from,
             List<ContactSummary> to,
             List<AttachmentSummary> attachments,
-            List<EmbeddedSummary> embedded)
+            List<EmbeddedSummary> embedded) :this()
         {
             Owners = owners;
             CommonHeaders = commonHeaders;
@@ -25,6 +23,16 @@ namespace Yambr.Email.Common.Models
             To = to;
             Attachments = attachments;
             Embedded = embedded;
+        }
+
+        public EmailMessage()
+        {
+            Owners = new List<MailOwnerSummary>();
+            CommonHeaders = new List<HeaderSummary>();
+            From = new List<ContactSummary>();
+            To = new List<ContactSummary>();
+            Attachments = new List<AttachmentSummary>();
+            Embedded = new List<EmbeddedSummary>();
         }
 
         public DateTime DateUtc { get; set; }

@@ -26,7 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Yambr.Analyzer.Pullenti\Yambr.Analyzer.Pullenti.csproj" />
     <ProjectReference Include="..\Yambr.DistributedCache\Yambr.DistributedCache.csproj" />
+    <ProjectReference Include="..\Yambr.Email.Consumer\Yambr.Email.Consumer.csproj" />
     <ProjectReference Include="..\Yambr.Email.Processor\Yambr.Email.Processor.csproj">
       <Private>true</Private>
     </ProjectReference>

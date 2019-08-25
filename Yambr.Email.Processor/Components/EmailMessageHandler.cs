@@ -19,8 +19,10 @@ namespace Yambr.Email.Processor.Components
 
         public EmailMessageHandler(
             ILogger<EmailMessageHandler> logger,
+            IMailBox mailBox,
             IRabbitMQService rabbitMQService)
         {
+            MailBox = mailBox;
             _logger = logger;
             _rabbitMQService = rabbitMQService;
         }

@@ -13,7 +13,7 @@ namespace Yambr.Email.Processor.Components
     {
         public void OnConnect(IModel model)
         {
-            model.ExchangeDeclare(RabbitMQConstants.EmailExchangeName, ExchangeType.Direct, false, false);
+            model.ExchangeDeclare(RabbitMQConstants.EmailExchangeName, ExchangeType.Direct, true, false);
 
             model.QueueDeclare(RabbitMQConstants.TasksQueueName, true, false, false);
             model.QueueBind(

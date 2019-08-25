@@ -85,7 +85,7 @@ namespace Yambr.DistributedCache.Services.Impl
         public T Get<T>(string key, string region)
         {
             byte[] value = _distributedCache.Get(GetKey(key, region));
-            return Decode<T>(value);
+            return value != null ? Decode<T>(value) : default;
         }
 
         
@@ -93,7 +93,7 @@ namespace Yambr.DistributedCache.Services.Impl
         public async Task<T> GetAsync<T>(string key, string region)
         {
             byte[] value = await _distributedCache.GetAsync(GetKey(key, region));
-            return Decode<T>(value);
+            return value != null ? Decode<T>(value) : default;
         }
 
         public void Remove(string key)

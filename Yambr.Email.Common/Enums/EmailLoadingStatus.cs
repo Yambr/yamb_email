@@ -1,5 +1,9 @@
-﻿namespace Yambr.Email.Common.Enums
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace Yambr.Email.Common.Enums
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum EmailLoadingStatus
     {
         Disabled = 0,

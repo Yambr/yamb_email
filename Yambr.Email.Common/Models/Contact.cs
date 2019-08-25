@@ -6,7 +6,7 @@ namespace Yambr.Email.Common.Models
     public class Contact : IContact
     {
         [JsonConstructor]
-        public Contact(List<Email> emails, List<Phone> phones, LocalUser user, List<ContractorSummary> contractors)
+        public Contact(List<Email> emails, List<Phone> phones, LocalUser user, List<ContractorSummary> contractors) :this()
         {
             Emails = emails;
             Phones = phones;
@@ -16,6 +16,9 @@ namespace Yambr.Email.Common.Models
 
         public Contact()
         {
+            Emails = new List<Email>();
+            Phones = new List<Phone>();
+            Contractors = new List<ContractorSummary>();
         }
 
         public ICollection<Email> Emails { get; set; }

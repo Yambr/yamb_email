@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fizzler.Systems.HtmlAgilityPack;
@@ -27,7 +28,7 @@ namespace Yambr.Email.Loader.Components
         public IMailBox  MailBox { get; }
 
         public DefaultEmailMessageHandler(
-            ILogger logger,
+            ILogger<DefaultEmailMessageHandler> logger,
             IMailBox mailBox,
             IMailAnalyzeService mailAnalyzeService,
             IContactService contactService,
@@ -115,22 +116,31 @@ namespace Yambr.Email.Loader.Components
         /// заполнить направление
         /// </summary>
         /// <param name="emailMessage"></param>
-        private static void FillDirection(IMessagePart emailMessage)
+        private void FillDirection(IMessagePart emailMessage)
         {
             //если в поле от есть наш пользователь значит письмо исходящее
-            if (emailMessage.From.Any(c => c.Contact?.User != null))
+            if (HasInMailBox(emailMessage.From))
             {
                 emailMessage.Direction = Direction.Outcoming;
             }
             else
             {
                 emailMessage.Direction
-                    = //если в поле кому есть наша почта значит входящее во всех остальных случаях оно входящее
-                    emailMessage.To.Any(c => c.Contact?.User != null)
+                    = HasInMailBox(emailMessage.To) //если в поле кому есть наша почта значит входящее во всех остальных случаях оно входящее
                         ? Direction.Incoming
                         : Direction.Outcoming;
             }
         }
+
+        private bool HasInMailBox(ICollection<ContactSummary> contactSummaries)
+        {
+            var any = contactSummaries.Any(c => c.Email.Equals(MailBox.Login, StringComparison.InvariantCultureIgnoreCase)) ||
+                      contactSummaries.Any(c =>
+                          MailBox.User.Aliases.Any(a => a.Equals(c.Email, StringComparison.InvariantCultureIgnoreCase)));
+            return any;
+        }
+
+
         /// <summary>
         /// Заполнить теги
         /// </summary>
@@ -142,6 +152,10 @@ namespace Yambr.Email.Loader.Components
             string textWithoutTags;
             foreach (var tag in emailMessage.Subject.GetAllTags(out textWithoutTags))
             {
+                if (emailMessage.Tags == null)
+                {
+                    emailMessage.Tags = new List<HashTag>();
+                }
                 emailMessage.Tags.Add(new HashTag
                 {
                     Name = tag,
