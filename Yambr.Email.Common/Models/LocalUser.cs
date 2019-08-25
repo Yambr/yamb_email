@@ -1,4 +1,7 @@
-﻿namespace Yambr.Email.Common.Models
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace Yambr.Email.Common.Models
 {
     /// <summary>
     /// Пользователь локальной БД
@@ -8,7 +11,19 @@
     /// </summary>
     public class LocalUser :  ILocalUser
     {
+        [JsonConstructor]
+        public LocalUser(List<string> aliases)
+        {
+            Aliases = aliases;
+        }
+
+        public LocalUser()
+        {
+        }
+
         public string Fio { get; set; }
         public int UserId { get; set; }
+        public ICollection<string> Aliases { get; set; }
+        public string OwnerQueue { get; set; }
     }
 }

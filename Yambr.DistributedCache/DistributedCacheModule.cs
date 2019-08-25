@@ -1,6 +1,4 @@
-﻿using Autofac;
-using StackExchange.Redis;
-using Yambr.SDK.Autofac;
+﻿using Yambr.SDK.Autofac;
 
 namespace Yambr.DistributedCache
 {

@@ -9,7 +9,7 @@ using Yambr.SDK.ComponentModel;
 namespace Yambr.Email.Processor.Components
 {
     [Component]
-    class ProcessorRabbitDeclareHandler : IRabbitDeclareHandler
+    internal class ProcessorRabbitDeclareHandler : IRabbitDeclareHandler
     {
         public void OnConnect(IModel model)
         {
@@ -36,6 +36,7 @@ namespace Yambr.Email.Processor.Components
 
         public IEnumerable<string> ConsumeQueues()
         {
+            //TODO избавиться от лишних очередей и ключей
             return new[]
             {
                 RabbitMQConstants.TasksQueueName,

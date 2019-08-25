@@ -3,11 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Yambr.RabbitMQ.Exceptions;
 using Yambr.RabbitMQ.ExtensionPoints;
+using Yambr.RabbitMQ.Models;
 using Yambr.SDK.ComponentModel;
 
 namespace Yambr.RabbitMQ.Services.Impl
@@ -77,6 +79,25 @@ namespace Yambr.RabbitMQ.Services.Impl
             return Encoding.UTF8.GetString(header);
         }
 
+        public void SendMessage(string exchangeName, IQueueObject queueObject)
+        {
+            if (string.IsNullOrWhiteSpace(queueObject?.Message))
+            {
+                throw new Exception("Ошибка отправки сообщения." + Environment.NewLine + "Нельзя отправить пустое текстовое сообщение.");
+            }
+            var body = Encoding.UTF8.GetBytes(queueObject.Message);
+            if (body == null)
+            {
+                throw new Exception("Ошибка отправки сообщения." + Environment.NewLine + "Нельзя отправить пустое текстовое сообщение.");
+            }
+            var model = NewConnect();
+            var basicProperties = model.CreateBasicProperties();
+            basicProperties.DeliveryMode = 2;
+            basicProperties.Headers = queueObject.Headers;
+            basicProperties.AppId = _rabbitMQSettings.AppId;
+            model.BasicPublish(exchangeName, queueObject.RoutingKey, basicProperties, body);
+        }
+
         public void Init()
         {
 
@@ -84,20 +105,7 @@ namespace Yambr.RabbitMQ.Services.Impl
             {
                 DisposeConnection();
                 if (_rabbitMQSettings.HostName == null) return;
-                var connectionFactory = new ConnectionFactory
-                {
-                    HostName = _rabbitMQSettings.HostName,
-                    VirtualHost = _rabbitMQSettings.VirtualHost,
-                    Protocol = Protocols.AMQP_0_9_1,
-                    Port = _rabbitMQSettings.Port,
-                    UserName = _rabbitMQSettings.UserName,
-                    Password = _rabbitMQSettings.Password,
-                    AutomaticRecoveryEnabled = true,
-                    TopologyRecoveryEnabled = false
-                };
-
-                var connection = connectionFactory.CreateConnection();
-                var model = connection.CreateModel();
+                var model = NewConnect();
                 //Читаем по одному сообщению по умолчанию
                 model.BasicQos(0, 1, true);
 
@@ -111,7 +119,10 @@ namespace Yambr.RabbitMQ.Services.Impl
                 foreach (var queueName in _rabbitDeclareHandlers.SelectMany(c => c.ConsumeQueues()))
                 {
                     var consumer = new EventingBasicConsumer(model);
-                    consumer.Received += (sender, args) => { OnReceived(sender, args, model); };
+                    consumer.Received += async (sender, args) =>
+                    {
+                        await OnReceived(sender, args, model);
+                    };
 
                     model.BasicConsume(
                         queueName,
@@ -132,7 +143,24 @@ namespace Yambr.RabbitMQ.Services.Impl
             }
         }
 
+        private IModel NewConnect()
+        {
+            var connectionFactory = new ConnectionFactory
+            {
+                HostName = _rabbitMQSettings.HostName,
+                VirtualHost = _rabbitMQSettings.VirtualHost,
+                Protocol = Protocols.AMQP_0_9_1,
+                Port = _rabbitMQSettings.Port,
+                UserName = _rabbitMQSettings.UserName,
+                Password = _rabbitMQSettings.Password,
+                AutomaticRecoveryEnabled = true,
+                TopologyRecoveryEnabled = false
+            };
 
+            var connection = connectionFactory.CreateConnection();
+            var model = connection.CreateModel();
+            return model;
+        }
 
 
         #region Обработка входящего сообщения
@@ -143,7 +171,7 @@ namespace Yambr.RabbitMQ.Services.Impl
         /// <param name="model"></param>
         /// <param name="eventArgs"></param>
         /// <param name="connection"></param>
-        private void OnReceived(object model, BasicDeliverEventArgs eventArgs, IModel connection)
+        private async Task OnReceived(object model, BasicDeliverEventArgs eventArgs, IModel connection)
         {
             try
             {
@@ -152,7 +180,7 @@ namespace Yambr.RabbitMQ.Services.Impl
                 _logger.LogDebug($"{eventArgs.Exchange}: { eventArgs.RoutingKey}: {model}: {message}");
 
 
-                PrepareMessage(message, eventArgs, connection);
+               await  PrepareMessage(message, eventArgs, connection);
 
             }
             catch (Exception ex)
@@ -167,7 +195,7 @@ namespace Yambr.RabbitMQ.Services.Impl
         /// <param name="messageJson"></param>
         /// <param name="eventArgs"></param>
         /// <param name="connection"></param>
-        private void PrepareMessage(string messageJson, BasicDeliverEventArgs eventArgs, IModel connection)
+        private async Task PrepareMessage(string messageJson, BasicDeliverEventArgs eventArgs, IModel connection)
         {
             try
             {
@@ -176,7 +204,7 @@ namespace Yambr.RabbitMQ.Services.Impl
 
                 foreach (var handler in rMessageHandlers)
                 {
-                    handler.Execute(messageJson, model);
+                    await handler.ExecuteAsync(messageJson, model);
                 }
                 connection.BasicAck(eventArgs.DeliveryTag, false);
             }

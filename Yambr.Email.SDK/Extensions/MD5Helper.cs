@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
 
-namespace Yambr.Core.Helpers
+namespace Yambr.SDK.Extensions
 {
     public static class MD5Extensions
     {

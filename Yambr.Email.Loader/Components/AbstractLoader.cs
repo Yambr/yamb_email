@@ -29,9 +29,9 @@ namespace Yambr.Email.Loader.Components
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        protected Task<bool> MustBeSavedAsync(MimeMessage message)
+        protected async Task<bool> MustBeSavedAsync(IMailBox mailBox, MimeMessage message)
         {
-            return _emailMesageService.MustBeSavedAsync(message);
+            return await _emailMesageService.MustBeSavedAsync(mailBox, message);
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace Yambr.Email.Loader.Components
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public Task SaveMessageAsync(MimeMessage message)
+        public async Task SaveMessageAsync(IMailBox mailBox, MimeMessage message)
         {
-            return _emailMesageService.SaveMessageAsync(message);
+            await _emailMesageService.SaveMessageAsync(mailBox, message);
         }
 
         protected async Task AuthorizeAsync(IMailService client, IMailBox mailBox)

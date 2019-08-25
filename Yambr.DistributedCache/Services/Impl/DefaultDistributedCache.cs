@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -22,9 +23,6 @@ namespace Yambr.DistributedCache.Services.Impl
 
         private const string DefaultRegion = "DefaultRegion";
 
-
-
-
         public void Insert<T>(string key, T value, string region, TimeSpan cacheDuration)
         {
 
@@ -34,6 +32,13 @@ namespace Yambr.DistributedCache.Services.Impl
             });
         }
 
+        public async Task InsertAsync<T>(string key, T value, string region, TimeSpan cacheDuration)
+        {
+            await _distributedCache.SetAsync(GetKey(key, region), Encode(value), new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = cacheDuration
+            });
+        }
 
 
         public void Insert<T>(string key, T value, TimeSpan cacheDuration)
@@ -41,22 +46,41 @@ namespace Yambr.DistributedCache.Services.Impl
             Insert(key, value, null, cacheDuration);
         }
 
+        public async Task InsertAsync<T>(string key, T value, TimeSpan cacheDuration)
+        {
+            await InsertAsync(key, value, null, cacheDuration);
+        }
+
         public void Insert<T>(string key, T value, string region)
         {
             _distributedCache.Set(GetKey(key, region), Encode(value));
+        }
+
+        public async Task InsertAsync<T>(string key, T value, string region)
+        {
+            await _distributedCache.SetAsync(GetKey(key, region), Encode(value));
         }
 
         public void Insert<T>(string key, T value)
         {
             _distributedCache.Set(GetKey(key, null), Encode(value));
         }
+        
+        public async Task InsertAsync<T>(string key, T value)
+        {
+            await _distributedCache.SetAsync(GetKey(key, null), Encode(value));
+        }
+
 
         public T Get<T>(string key)
         {
             return Get<T>(key, null);
         }
 
-
+        public async Task<T> GetAsync<T>(string key)
+        {
+            return await GetAsync<T>(key, null);
+        }
 
         public T Get<T>(string key, string region)
         {
@@ -64,9 +88,21 @@ namespace Yambr.DistributedCache.Services.Impl
             return Decode<T>(value);
         }
 
+        
+
+        public async Task<T> GetAsync<T>(string key, string region)
+        {
+            byte[] value = await _distributedCache.GetAsync(GetKey(key, region));
+            return Decode<T>(value);
+        }
+
         public void Remove(string key)
         {
             Remove(key, null);
+        }
+        public async Task RemoveAsync(string key)
+        {
+            await RemoveAsync(key, null);
         }
 
         public void Remove(string key, string region)
@@ -74,6 +110,11 @@ namespace Yambr.DistributedCache.Services.Impl
             _distributedCache.Remove(GetKey(key, region));
         }
 
+        public async Task RemoveAsync(string key, string region)
+        {
+            await _distributedCache.RemoveAsync(GetKey(key, region));
+        }
+        
         private static string ProcessRegion(string region)
         {
             if (string.IsNullOrEmpty(region))

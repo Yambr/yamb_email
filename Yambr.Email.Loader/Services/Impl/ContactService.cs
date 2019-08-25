@@ -3,24 +3,28 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Yambr.DistributedCache.Services;
 using Yambr.Email.Common.Models;
-using Yambr.Email.SDK.Extensions;
+using Yambr.SDK.ComponentModel;
+using Yambr.SDK.Extensions;
 
 namespace Yambr.Email.Loader.Services.Impl
 {
+    [Service]
     public class ContactService : IContactService
     {
+        private const string ContactRegion = "Contact";
         private readonly ILogger _logger;
         private readonly IContractorService _contractorService;
-        private readonly IMailBoxService _mailBoxService;
+        private readonly ICacheService _cacheService;
 
         public ContactService(
             ILogger<ContactService> logger,
             IContractorService contractorService,
-            IMailBoxService mailBoxService)
+            ICacheService cacheService)
         {
             _contractorService = contractorService;
-            _mailBoxService = mailBoxService;
+            _cacheService = cacheService;
             _logger = logger;
         }
         /// <summary>
@@ -35,8 +39,8 @@ namespace Yambr.Email.Loader.Services.Impl
             var contact = await GetOrCreateContactAsync(normalizedEmail, mailbox.Name);
             var contactSummary = new ContactSummary(normalizedEmail, contact);
 
-            ////TODO Save to cache
-            //await _contactCollection.CreateOrUpdateOneAsync(contact);
+          
+            await _cacheService.InsertAsync(normalizedEmail,ContactRegion, TimeSpan.FromDays(30));
                 _logger.Info($"Сохранен контакт {contact.Fio} по {mailbox.Address}");
            
 
@@ -50,27 +54,15 @@ namespace Yambr.Email.Loader.Services.Impl
         {
             // поискали в контактах
             var contact = await GetContactByEmailAsync(normalizedEmail);
-            //поискали среди наших ящиков
-            var mailBox = await _mailBoxService.GetMailBoxByEmail(normalizedEmail);
-
             if (contact == null)
             {
                 // создаем на основе ящика или email
-                contact =
-                    mailBox != null ?
-                    await GetOrCreateContactByMailBoxAsync(mailBox) : //получаем или создаем контакт по ящику нашему
-                    CreateContact(normalizedEmail);//создаем контакт по ящику
-
+                contact = CreateContact(normalizedEmail);//создаем контакт по ящику
                 //т.к. контакт найден среди наших или был создан 
                 //то по домену попробуем найти контрагента
                 await FillContractorAsync(normalizedEmail, contact);
             }
             ExtractAndSetFio(contact, name);
-
-            if (mailBox?.User != null && contact.User != mailBox.User)
-            {
-                contact.User = mailBox.User;
-            }
 
             return contact;
         }
@@ -80,44 +72,7 @@ namespace Yambr.Email.Loader.Services.Impl
         /// <returns></returns>
         private async Task<Contact> GetContactByEmailAsync(string normalizedEmail)
         {
-            //TODO GetContactFromCache
-            return null;
-        }
-        /// <summary>
-        /// Получить или создать контакт по нашему внутреннему ящику (на самом деле по свяанному пользователю)
-        /// </summary>
-        /// <param name="mailBox"></param>
-        /// <returns></returns>
-        private async Task<Contact> GetOrCreateContactByMailBoxAsync(IMailBox mailBox)
-        {
-            if (mailBox == null) throw new ArgumentNullException(nameof(mailBox));
-            //создаем контакт по ящику или просто создаем
-            var contact = 
-                await GetContactByMailBoxAsync(mailBox) ?? 
-                new Contact();
-            contact.Emails.Add(new Email.Common.Models.Email(mailBox.Login));
-            contact.User = mailBox.User;
-            contact.Fio = mailBox.User?.Fio;
-            return contact;
-        }
-        /// <summary>
-        /// Получить контакт по нашему внутреннему ящику (на самом деле по свяанному пользователю)
-        /// </summary>
-        /// <param name="mailBox"></param>
-        /// <returns></returns>
-        private async Task<Contact> GetContactByMailBoxAsync(IMailBox mailBox)
-        {
-            if (mailBox == null) throw new ArgumentNullException(nameof(mailBox));
-            if (mailBox.User == null) return null;
-            /*
-             TODO поиск по пользователю
-            var cursor = await _contactCollection.FindAsync(record => record.User.Id == mailBox.User.Id,
-                new FindOptions<ContactRecord, ContactRecord>
-                {
-                    Limit = 1,
-                    BatchSize = 1
-                });*/
-            return  null;
+            return await _cacheService.GetAsync<Contact>(normalizedEmail, ContactRegion);
         }
         /// <summary>
         /// Создать контакт на основе ящика
@@ -128,7 +83,7 @@ namespace Yambr.Email.Loader.Services.Impl
         {
             if (normalizedEmail == null) throw new ArgumentNullException(nameof(normalizedEmail));
             var contact = new Contact();
-            contact.Emails.Add(new Email.Common.Models.Email(normalizedEmail));
+            contact.Emails.Add(new Common.Models.Email(normalizedEmail));
             return contact;
         }
 

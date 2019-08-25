@@ -1,14 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+using Newtonsoft.Json;
 using Yambr.Email.Common.Enums;
 
 namespace Yambr.Email.Common.Models
 {
     public class EmailMessage :  IContentItem, IBodyPart, IMessagePart, IAttachmentsPart, ITagsPart, IEmbeddedPart
     {
-        public EmailMessage(ICollection<MailOwnerSummary> owners, ICollection<HeaderSummaryPart> commonHeaders, ICollection<ContactSummary> @from, ICollection<ContactSummary> to, ICollection<AttachmentSummary> attachments, ICollection<EmbeddedSummary> embedded)
+     
+        public EmailMessage() { }
+
+        [JsonConstructor]
+        public EmailMessage(
+            List<MailOwnerSummary> owners,
+            List<HeaderSummary> commonHeaders,
+            List<ContactSummary> @from,
+            List<ContactSummary> to,
+            List<AttachmentSummary> attachments,
+            List<EmbeddedSummary> embedded)
         {
             Owners = owners;
             CommonHeaders = commonHeaders;
@@ -17,13 +26,12 @@ namespace Yambr.Email.Common.Models
             Attachments = attachments;
             Embedded = embedded;
         }
-        public EmailMessage() { }
 
         public DateTime DateUtc { get; set; }
         public string Hash { get; set; }
         public ICollection<MailOwnerSummary> Owners { get; set; }
         public string MainHeader { get; set; }
-        public ICollection<HeaderSummaryPart> CommonHeaders { get; set; }
+        public ICollection<HeaderSummary> CommonHeaders { get; set; }
         public string Body { get; set; }
         public bool IsBodyHtml { get; set; }
         public Direction Direction { get; set; }

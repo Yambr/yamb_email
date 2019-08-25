@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client.Events;
+using Yambr.RabbitMQ.Models;
 
 namespace Yambr.RabbitMQ.Services
 {
@@ -28,6 +29,13 @@ namespace Yambr.RabbitMQ.Services
         /// <returns></returns>
         string GetModelFromMessage(BasicDeliverEventArgs eventArgs, string message);
 
-      
+        /// <summary>
+        /// Отправить сообщение немедленно
+        /// в exchange очереди
+        /// </summary>
+        /// <param name="exchangeName"></param>
+        /// <param name="queueObject">сообщение для отправки</param>
+        void SendMessage(string exchangeName, IQueueObject queueObject);
+
     }
 }

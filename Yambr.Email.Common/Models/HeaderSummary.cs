@@ -1,10 +1,10 @@
 ﻿namespace Yambr.Email.Common.Models
 {
-    public class HeaderSummaryPart
+    public class HeaderSummary
     {
-        public HeaderSummaryPart(){}
+        public HeaderSummary(){}
 
-        public HeaderSummaryPart(string text)
+        public HeaderSummary(string text)
         {
             Text = text;
         }

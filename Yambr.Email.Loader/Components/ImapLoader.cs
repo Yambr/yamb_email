@@ -5,8 +5,8 @@ using Microsoft.Extensions.Logging;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.Services;
-using Yambr.Email.SDK.Extensions;
 using Yambr.SDK.ComponentModel;
+using Yambr.SDK.Extensions;
 
 
 namespace Yambr.Email.Loader.Components
@@ -33,7 +33,7 @@ namespace Yambr.Email.Loader.Components
                 Logger.Info($"Подключены к {mailBox.Login} c помощью {nameof(ImapLoader)}");
 
                 // The Inbox folder is always available on all IMAP servers...
-                await  LoadFromFolderAsync(client.Inbox.ParentFolder);
+                await  LoadFromFolderAsync(mailBox, client.Inbox.ParentFolder);
 
                 await client.DisconnectAsync(true);
             }
@@ -41,7 +41,7 @@ namespace Yambr.Email.Loader.Components
             return EmailLoadingStatus.Active;
         }
 
-        private async Task LoadFromFolderAsync(IMailFolder parentFolder)
+        private async Task LoadFromFolderAsync(IMailBox mailBox, IMailFolder parentFolder)
         {
             var folders = await parentFolder.GetSubfoldersAsync();
 
@@ -60,9 +60,9 @@ namespace Yambr.Email.Loader.Components
                                 
                                 var message = await folder.GetMessageAsync(i);
                                 // только такая проверка т.к. в POP3 без вариантов
-                                if (await MustBeSavedAsync(message))
+                                if (await MustBeSavedAsync(mailBox, message))
                                 {
-                                    await SaveMessageAsync(message);
+                                    await SaveMessageAsync(mailBox, message);
                                     continue;
                                 }
                                 //если письмо сохранять не нужно то сразу выходим
@@ -72,7 +72,7 @@ namespace Yambr.Email.Loader.Components
                         }
                         if ((folderEnumerator.Current.Attributes & FolderAttributes.HasChildren) != 0)
                         {
-                            await LoadFromFolderAsync(folderEnumerator.Current);
+                            await LoadFromFolderAsync(mailBox, folderEnumerator.Current);
                         }
                     }
                 }

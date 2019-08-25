@@ -28,8 +28,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Yambr.Analyzer\Yambr.Analyzer.csproj" />
+    <ProjectReference Include="..\Yambr.DistributedCache\Yambr.DistributedCache.csproj" />
     <ProjectReference Include="..\Yambr.Email.Common\Yambr.Email.Common.csproj" />
     <ProjectReference Include="..\Yambr.Email.SDK\Yambr.SDK.csproj" />
+    <ProjectReference Include="..\Yambr.RabbitMQ\Yambr.RabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup>

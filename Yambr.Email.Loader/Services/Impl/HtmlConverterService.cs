@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using HtmlAgilityPack;
+using Yambr.SDK.ComponentModel;
 
 namespace Yambr.Email.Loader.Services.Impl
 {
+    [Service]
     public class HtmlConverterService : IHtmlConverterService
     {
         #region Public Methods

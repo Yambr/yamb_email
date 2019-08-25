@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Yambr.SDK.ComponentModel;
 
 namespace Yambr.RabbitMQ.ExtensionPoints
@@ -23,6 +24,6 @@ namespace Yambr.RabbitMQ.ExtensionPoints
         /// </summary>
         /// <param name="message">содержимое сообщения</param>
         /// <param name="model"> тип сообщения </param>
-        void Execute(string message, string model);
+        Task ExecuteAsync(string message, string model);
     }
 }

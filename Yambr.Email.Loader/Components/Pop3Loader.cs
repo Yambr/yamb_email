@@ -6,8 +6,8 @@ using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Services;
-using Yambr.Email.SDK.Extensions;
 using Yambr.SDK.ComponentModel;
+using Yambr.SDK.Extensions;
 
 namespace Yambr.Email.Loader.Components
 {
@@ -31,7 +31,7 @@ namespace Yambr.Email.Loader.Components
                 await AuthorizeAsync(client, mailBox);
 
                 Logger.Info($"Подключены к {mailBox.Login} c помощью {nameof(ImapLoader)}");
-                await LoadMessagesAsync(client);
+                await LoadMessagesAsync(mailBox, client);
 
                 await client.DisconnectAsync(true, CancellationToken.None);
             }
@@ -41,9 +41,10 @@ namespace Yambr.Email.Loader.Components
         /// <summary>
         /// Загрузим сообщения
         /// </summary>
+        /// <param name="mailBox"></param>
         /// <param name="client"></param>
         /// <returns></returns>
-        private async Task LoadMessagesAsync(Pop3Client client)
+        private async Task LoadMessagesAsync(IMailBox mailBox, Pop3Client client)
         {
             var count = client.Count;
             for (var i = count-1; i > 0; i--)
@@ -51,9 +52,9 @@ namespace Yambr.Email.Loader.Components
                var message = await client.GetMessageAsync(i);
                
                 // только такая проверка т.к. в POP3 без вариантов
-                if (await MustBeSavedAsync(message))
+                if (await MustBeSavedAsync(mailBox, message))
                 {
-                    await SaveMessageAsync(message);
+                    await SaveMessageAsync(mailBox,message);
                     continue;
                 }
                 //если письмо сохранять не нужно то сразу выходим

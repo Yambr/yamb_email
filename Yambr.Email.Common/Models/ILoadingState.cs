@@ -7,8 +7,6 @@ namespace Yambr.Email.Common.Models
     {
       
         DateTime LastStartTimeUtc { get; set; }
-        DateTime NextFireTimeUtc { get; set; }
         EmailLoadingStatus Status { get; set; }
-        string LoaderError { get; set; }
     }
 }

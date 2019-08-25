@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Autofac;
+using Autofac.Builder;
 using Yambr.SDK.ComponentModel;
+using Yambr.SDK.ComponentModel.Enums;
 using Module = Autofac.Module;
 
 namespace Yambr.SDK.Autofac
@@ -36,13 +38,12 @@ namespace Yambr.SDK.Autofac
         {
             var registrationBuilder = builder.RegisterType(type).AsImplementedInterfaces();
             Console.WriteLine(" registered  service " + type.FullName);
-            registrationBuilder.OwnedByLifetimeScope();
-            registrationBuilder.SingleInstance();
+            RegisterScope(registrationBuilder, serviceAtributes.Cast<ServiceAttribute>().FirstOrDefault()?.Scope);
         }
 
         private static void RegisterAsComponent(ContainerBuilder builder, Type type, IEnumerable<Attribute> componentAtributes)
         {
-            var registrationBuilder = builder.RegisterType(type);
+           
             var interfaces = type.GetInterfaces();
 
             Console.WriteLine(" registered  component " + type.FullName);
@@ -50,17 +51,42 @@ namespace Yambr.SDK.Autofac
             {
                 foreach (var baseInterface in interfaces)
                 {
+                    var registrationBuilder = builder.RegisterType(type);
                     var extensionPointAttributes =
-                        baseInterface.GetCustomAttributes(typeof(ExtensionPointAttribute));
-                    if (extensionPointAttributes.Any())
+                        baseInterface.GetCustomAttributes(typeof(ExtensionPointAttribute)).Cast<ExtensionPointAttribute>();
+
+                    var pointAttributes = extensionPointAttributes as ExtensionPointAttribute[] ?? extensionPointAttributes.ToArray();
+                    if (pointAttributes.Any())
                     {
                         registrationBuilder.As(baseInterface);
                         Console.WriteLine(
                             "  as extensionPoint " + string.Join(", ", interfaces.Select(c => c.FullName)));
                     }
+
+                    RegisterScope(registrationBuilder, pointAttributes.FirstOrDefault()?.Scope);
                 }
             }
-            registrationBuilder.SingleInstance();
+            
+        }
+
+        private static void RegisterScope(IRegistrationBuilder<object, ConcreteReflectionActivatorData, SingleRegistrationStyle> registrationBuilder, Scope? scope)
+        {
+            switch (scope)
+            {
+                case Scope.InstancePerDependency:
+                    registrationBuilder.InstancePerDependency();
+                    break;
+                case Scope.SingleInstance:
+                    registrationBuilder.SingleInstance();
+                    break;
+                case Scope.InstancePerLifetimeScope:
+                    registrationBuilder.InstancePerLifetimeScope();
+                    break;
+                default:
+                    registrationBuilder.SingleInstance();
+                    break;
+            }
+            
         }
     }
 }
