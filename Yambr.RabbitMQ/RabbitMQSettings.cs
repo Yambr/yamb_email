@@ -20,6 +20,8 @@ namespace Yambr.RabbitMQ
             }
         }
         public string AppId { get; set; }
+
+        //TODO выпилить
         public string ModelHeaderKey { get; set; }
         public string HostName { get; set; }
         public string VirtualHost { get; set; }
