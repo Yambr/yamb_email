@@ -15,7 +15,7 @@ steps:
   inputs:
     repository: $(imageName)
     command: build
-    Dockerfile: /Yambr.Email.Consumer/Dockerfile
+    Dockerfile: Yambr.Email.Consumer/Dockerfile
 
 variables:
   imageName: 'pipelines-javascript-docker'
