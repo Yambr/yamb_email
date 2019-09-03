@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Yambr.Email.Common</PackageId>
+    <Version>1.0.1</Version>
+    <Authors>i@yambr.ru</Authors>
+    <Company>Y A M B R </Company>
   </PropertyGroup>
 
   <ItemGroup>
