@@ -9,12 +9,12 @@ using Yambr.SDK.ComponentModel;
 namespace Yambr.Email.Processor.Components
 {
     [Component]
-    class MailboxMessageHandler : AbstractRabbitMessageHandler<MailBox, EmailLoadingStatus>
+    class MailboxRabbitMessageHandler : AbstractRabbitMessageHandler<MailBox, EmailLoadingStatus>
     {
         private readonly ILoaderService _loaderService;
 
-        public MailboxMessageHandler(
-            ILogger<MailboxMessageHandler> logger,
+        public MailboxRabbitMessageHandler(
+            ILogger<MailboxRabbitMessageHandler> logger,
             ILoaderService loaderService
         ) : base(logger)
         {

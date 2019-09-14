@@ -37,10 +37,10 @@ namespace Yambr.Email.Processor.Components
         public Task OnSaveAsync(EmailMessage emailMessage)
         {
             _rabbitMQService.SendMessage(
-                RabbitMQConstants.EmailExchangeName,
+                RabbitMQConstants.ExchangeEmail,
                 new JsonQueueObject<EmailMessage>(emailMessage,
                     "EmailMessage",
-                    MailBox.User.OwnerQueue ?? string.Empty));
+                    MailBox.User.OwnerQueue ?? RabbitMQConstants.RoutingKeyEmailEventCreated));
 
             return Task.CompletedTask;
         }

@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Yambr.RabbitMQ
+﻿namespace Yambr.Email.Processor
 {
     public static class RabbitMQConstants
     {
-        public const string ToTasksRoutingKey = "ToTasksQueueYambr";
-        public const string TasksQueueName = "TasksQueueYambr";
+     
+        public const string QueueMailboxDownload = "mailbox-download-queue";
 
-        public const string ToEmailRoutingKey = "ToEmailQueueYambr";
-        public const string EmailQueueName = "EmailQueueYambr";
+        public const string RoutingKeyEmailEventCreated = "email.event.created";
+        public const string QueueEmailCreated = "email-created-queue";
 
-        public const string ToPullentiRoutingKey = "ToPullentiQueueYambr";
-        public const string PullentiQueueName = "PullentiQueueYambr";
 
-        public const string EmailExchangeName = "EmailExchangeYambr";
+        public const string ExchangeEmail = "email";
     }
 }

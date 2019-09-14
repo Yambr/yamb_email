@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using RabbitMQ.Client;
-using Yambr.RabbitMQ;
 using Yambr.RabbitMQ.ExtensionPoints;
 using Yambr.SDK.ComponentModel;
 
@@ -13,35 +10,21 @@ namespace Yambr.Email.Processor.Components
     {
         public void OnConnect(IModel model)
         {
-            model.ExchangeDeclare(RabbitMQConstants.EmailExchangeName, ExchangeType.Direct, true, false);
+            model.ExchangeDeclare(RabbitMQConstants.ExchangeEmail, ExchangeType.Direct, true, false);
 
-            model.QueueDeclare(RabbitMQConstants.TasksQueueName, true, false, false);
+            model.QueueDeclare(RabbitMQConstants.QueueMailboxDownload, true, false, false);
+            model.QueueDeclare(RabbitMQConstants.QueueEmailCreated, true, false, false);
             model.QueueBind(
-                RabbitMQConstants.TasksQueueName,
-                RabbitMQConstants.EmailExchangeName,
-                RabbitMQConstants.ToTasksRoutingKey);
-
-            model.QueueDeclare(RabbitMQConstants.EmailQueueName, true, false, false);
-            model.QueueBind(
-                RabbitMQConstants.EmailQueueName,
-                RabbitMQConstants.EmailExchangeName,
-                RabbitMQConstants.ToEmailRoutingKey);
-
-            model.QueueDeclare(RabbitMQConstants.PullentiQueueName, true, false, false);
-            model.QueueBind(
-                RabbitMQConstants.PullentiQueueName,
-                RabbitMQConstants.EmailExchangeName,
-                RabbitMQConstants.ToPullentiRoutingKey);
+                RabbitMQConstants.QueueEmailCreated,
+                RabbitMQConstants.ExchangeEmail,
+                RabbitMQConstants.RoutingKeyEmailEventCreated);
         }
 
         public IEnumerable<string> ConsumeQueues()
         {
-            //TODO избавиться от лишних очередей и ключей
             return new[]
             {
-                RabbitMQConstants.TasksQueueName,
-                RabbitMQConstants.EmailQueueName,
-                RabbitMQConstants.PullentiQueueName
+                RabbitMQConstants.QueueMailboxDownload
             };
         }
     }
