@@ -46,18 +46,14 @@ namespace Yambr.RabbitMQ.Components
                 result = await RunAsync(messageObject);
             }
 
-            Task ErrorCallBack(Exception exception)
-            {
-                _logger.Error(exception, $" Не удалось обработать {typeof(TMessage).FullName} в {this.GetType()}");
-                throw exception;
-            }
+           
 
             async Task SuccessCallback()
             {
                 //TODO обдумать реализацию
                 if (result != null) //TODO: V3111 https://www.viva64.com/en/w/v3111/ Checking value of 'result' for null will always return false when generic type is instantiated with a value type.
                 {
-                    await AfterAsync(result);
+                    await AfterAsync(message, result);
                 }
             }
 
@@ -68,10 +64,17 @@ namespace Yambr.RabbitMQ.Components
             }
             catch (Exception e)
             {
-                await ErrorCallBack(e);
+                await ErrorCallBack(message, e);
             }
 
         }
+
+        public virtual Task ErrorCallBack(TMessage message, Exception exception)
+        {
+            _logger.Error(exception, $" Не удалось обработать {typeof(TMessage).FullName} в {this.GetType()}");
+            throw exception;
+        }
+
         public virtual async Task<TMessage> BeforeAsync(string message, string model)
         {
 
@@ -83,7 +86,7 @@ namespace Yambr.RabbitMQ.Components
         }
 
         public  abstract Task<TResult> RunAsync(TMessage message);
-        public virtual Task AfterAsync(TResult result)
+        public virtual Task AfterAsync(TMessage message, TResult result)
         {
             return Task.CompletedTask;
         }

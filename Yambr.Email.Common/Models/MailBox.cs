@@ -23,5 +23,7 @@ namespace Yambr.Email.Common.Models
         public string Password { get; set; }
         public IServer Server { get; set; }
         public ILocalUser User { get; set; }
+        public string Error { get; set; }
+        public object Id { get; set; }
     }
 }

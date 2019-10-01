@@ -13,18 +13,15 @@ namespace Yambr.Email.Loader.Services.Impl
     [Service]
     public class ContactService : IContactService
     {
-        private const string ContactRegion = "Contact";
+      //  private const string ContactRegion = "Contact";
         private readonly ILogger _logger;
         private readonly IContractorService _contractorService;
-        private readonly ICacheService _cacheService;
 
         public ContactService(
             ILogger<ContactService> logger,
-            IContractorService contractorService,
-            ICacheService cacheService)
+            IContractorService contractorService)
         {
             _contractorService = contractorService;
-            _cacheService = cacheService;
             _logger = logger;
         }
         /// <summary>
@@ -60,7 +57,7 @@ namespace Yambr.Email.Loader.Services.Impl
                 //т.к. контакт найден среди наших или был создан 
                 //то по домену попробуем найти контрагента
                 await FillContractorAsync(normalizedEmail, contact);
-                await _cacheService.InsertAsync(normalizedEmail, contact, ContactRegion, TimeSpan.FromDays(30));
+              //  await _cacheService.InsertAsync(normalizedEmail, contact, ContactRegion, TimeSpan.FromDays(30));
             }
             ExtractAndSetFio(contact, name);
 
@@ -70,9 +67,9 @@ namespace Yambr.Email.Loader.Services.Impl
         /// Получить контакт по ящику Email
         /// </summary>
         /// <returns></returns>
-        private async Task<Contact> GetContactByEmailAsync(string normalizedEmail)
+        private Task<Contact> GetContactByEmailAsync(string normalizedEmail)
         {
-            return await _cacheService.GetAsync<Contact>(normalizedEmail, ContactRegion);
+            return null; // _cacheService.GetAsync<Contact>(normalizedEmail, ContactRegion);
         }
         /// <summary>
         /// Создать контакт на основе ящика

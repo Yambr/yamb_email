@@ -22,12 +22,13 @@ namespace Yambr.Email.Loader.Services.Impl
 
         public async Task<EmailLoadingStatus> LoadFromEmailAsync(IMailBox mailBox)
         {
-            foreach (var emailLoader in _emailLoaders.Where(c=>c.ConnectionType == mailBox.Server.ConnectionType))
+
+            foreach (var emailLoader in _emailLoaders.Where(c => c.ConnectionType == mailBox.Server.ConnectionType))
             {
                 return await emailLoader.LoadFromEmailAsync(mailBox);
             }
 
-            return EmailLoadingStatus.Error;
+            return EmailLoadingStatus.Active;
         }
     }
 }

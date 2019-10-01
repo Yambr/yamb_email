@@ -136,7 +136,7 @@ namespace Yambr.Email.Loader.Components
         {
             var any = contactSummaries.Any(c => c.Email.Equals(MailBox.Login, StringComparison.InvariantCultureIgnoreCase)) ||
                       contactSummaries.Any(c =>
-                          MailBox.User.Aliases.Any(a => a.Equals(c.Email, StringComparison.InvariantCultureIgnoreCase)));
+                          MailBox.User.Aliases?.Any(a => a.Equals(c.Email, StringComparison.InvariantCultureIgnoreCase)) ?? false);
             return any;
         }
 

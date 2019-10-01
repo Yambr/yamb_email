@@ -18,6 +18,16 @@ namespace Yambr.Email.Processor.Components
                 RabbitMQConstants.QueueEmailCreated,
                 RabbitMQConstants.ExchangeEmail,
                 RabbitMQConstants.RoutingKeyEmailEventCreated);
+
+            model.QueueDeclare(RabbitMQConstants.QueueMailboxEvents, true, false, false);
+            model.QueueBind(
+                RabbitMQConstants.QueueMailboxEvents,
+                RabbitMQConstants.ExchangeEmail,
+                RabbitMQConstants.RoutingKeyMailboxErrorLoading);
+            model.QueueBind(
+                RabbitMQConstants.QueueMailboxEvents,
+                RabbitMQConstants.ExchangeEmail,
+                RabbitMQConstants.RoutingKeyMailboxSuccessLoading);
         }
 
         public IEnumerable<string> ConsumeQueues()

@@ -10,5 +10,9 @@
 
 
         public const string ExchangeEmail = "email";
+
+        public const string QueueMailboxEvents = "mailbox-events-queue";
+        public const string RoutingKeyMailboxErrorLoading = "mailbox.event.error";
+        public const string RoutingKeyMailboxSuccessLoading = "mailbox.event.success";
     }
 }
