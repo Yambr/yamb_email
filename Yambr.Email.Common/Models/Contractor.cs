@@ -5,7 +5,8 @@ namespace Yambr.Email.Common.Models
     
     public class Contractor :  IContractor
     {
-       
+        public Contractor() { }
+
         /*
         #region Yandex
 
@@ -159,6 +160,10 @@ namespace Yambr.Email.Common.Models
         }
 
         public string Name { get; set; }
+        public string INN { get; set; }
+        public string OGRN { get; set; }
+        public string Description { get; set; }
         public ICollection<Domain> Domains { get; set; }
+        public string Site { get; set; }
     }
 }

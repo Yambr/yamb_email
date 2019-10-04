@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using Yambr.DistributedCache.Services;
 using Yambr.Email.Common.Models;
 using Yambr.SDK.ComponentModel;
 using Yambr.SDK.Extensions;
@@ -47,30 +46,19 @@ namespace Yambr.Email.Loader.Services.Impl
         /// <returns></returns>
         private async Task<Contact> GetOrCreateContactAsync(string normalizedEmail, string name)
         {
-            bool isNew = false;
+            var isNew = false;
             // поискали в контактах
-            var contact = await GetContactByEmailAsync(normalizedEmail);
-            if (contact == null)
-            {
-                // создаем на основе ящика или email
-                contact = CreateContact(normalizedEmail);//создаем контакт по ящику
+            var contact = CreateContact(normalizedEmail);//создаем контакт по ящику
                 //т.к. контакт найден среди наших или был создан 
                 //то по домену попробуем найти контрагента
-                await FillContractorAsync(normalizedEmail, contact);
+              //  await FillContractorAsync(normalizedEmail, contact);
               //  await _cacheService.InsertAsync(normalizedEmail, contact, ContactRegion, TimeSpan.FromDays(30));
-            }
+           
             ExtractAndSetFio(contact, name);
 
             return contact;
         }
-        /// <summary>
-        /// Получить контакт по ящику Email
-        /// </summary>
-        /// <returns></returns>
-        private Task<Contact> GetContactByEmailAsync(string normalizedEmail)
-        {
-            return null; // _cacheService.GetAsync<Contact>(normalizedEmail, ContactRegion);
-        }
+       
         /// <summary>
         /// Создать контакт на основе ящика
         /// </summary>
@@ -84,7 +72,7 @@ namespace Yambr.Email.Loader.Services.Impl
             return contact;
         }
 
-        /// <summary>
+    /*    /// <summary>
         /// Заполнить контрагента если не заполнен
         /// </summary>
         /// <param name="normalizedEmail"></param>
@@ -97,7 +85,7 @@ namespace Yambr.Email.Loader.Services.Impl
             var contractor = await _contractorService.GetOrCreateContractorSummaryByDomainAsync(mailAddress);
             AddContractor(contact, contractor);
         }
-
+/*
         private static void AddContractor(Contact contact, ContractorSummary contractor)
         {
             if (contractor == null) return;
@@ -105,7 +93,7 @@ namespace Yambr.Email.Loader.Services.Impl
             {
                 contact.Contractors.Add(contractor);
             }
-        }
+        }*/
 
         /// <summary>
         /// Достать фио
@@ -114,8 +102,10 @@ namespace Yambr.Email.Loader.Services.Impl
         /// <param name="name"></param>
         private void ExtractAndSetFio(IContact contact, string name)
         {
+           
             if (contact == null) throw new ArgumentNullException(nameof(contact));
             if (string.IsNullOrWhiteSpace(name)) return;
+            name = CleanName(name);
             if (string.IsNullOrWhiteSpace(contact.Fio))
             {
                 contact.Fio = name;
@@ -128,5 +118,16 @@ namespace Yambr.Email.Loader.Services.Impl
             }
         }
 
+        private static string CleanName(string name)
+        {
+            var chars = new List<char>();
+            foreach (var c in name)
+            {
+                if(char.IsLetter(c) || char.IsWhiteSpace(c))
+                    chars.Add(c);
+            }
+
+            return (new string(chars.ToArray())).Trim();
+        }
     }
 }

@@ -23,9 +23,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{76
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "EP.SdkCore\EP.Sdk.Core.csproj", "{DD8D4456-5A7A-4288-8993-2EACBEA40764}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Analyzer", "Yambr.Analyzer\Yambr.Analyzer.csproj", "{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Analyzer", "Yambr.Analyzer\Yambr.Analyzer.csproj", "{45F0CC9D-DBCD-4AE6-A09D-CE490DD1911C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Analyzer.Pullenti", "Yambr.Analyzer.Pullenti\Yambr.Analyzer.Pullenti.csproj", "{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Yambr.Analyzer.Pullenti", "Yambr.Analyzer.Pullenti\Yambr.Analyzer.Pullenti.csproj", "{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yambr.Email.XUnitTest", "Yambr.Email.XUnitTest\Yambr.Email.XUnitTest.csproj", "{DA5CA3EF-1A30-4383-A1F2-26EA7EF14AC5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{105D8C28-E7BF-4C4B-90EB-20839E7E22CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA5CA3EF-1A30-4383-A1F2-26EA7EF14AC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA5CA3EF-1A30-4383-A1F2-26EA7EF14AC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA5CA3EF-1A30-4383-A1F2-26EA7EF14AC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA5CA3EF-1A30-4383-A1F2-26EA7EF14AC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

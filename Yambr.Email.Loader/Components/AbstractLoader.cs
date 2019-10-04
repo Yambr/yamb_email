@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MailKit;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Yambr.Email.Common.EncryptionHelper;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.ExtensionPoints;
@@ -52,7 +53,8 @@ namespace Yambr.Email.Loader.Components
                 // Note: since we don't have an OAuth2 token, disable
                 // the XOAUTH2 authentication mechanism.
                 client.AuthenticationMechanisms.Remove("XOAUTH2");
-                await client.AuthenticateAsync(mailBox.Login, mailBox.Password);
+                var password = StringCipher.Decrypt(mailBox.Password, mailBox.Login);
+                await client.AuthenticateAsync(mailBox.Login, password);
             }
             catch (Exception ex)
             {

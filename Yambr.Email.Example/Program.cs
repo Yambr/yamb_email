@@ -9,8 +9,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Security;
 using StackExchange.Redis;
 using Yambr.DistributedCache.Services;
+using Yambr.Email.Common.EncryptionHelper;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.RabbitMQ.ExtensionPoints;
 using Yambr.SDK.Autofac;
@@ -18,9 +20,9 @@ using Yambr.SDK.ExtensionPoints;
 
 namespace Yambr.Email.Example
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

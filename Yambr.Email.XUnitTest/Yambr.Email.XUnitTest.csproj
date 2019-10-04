@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.12" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="xunit" Version="2.4.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EP.SdkCore\EP.Sdk.Core.csproj" />
+    <ProjectReference Include="..\Yambr.Analyzer.Pullenti\Yambr.Analyzer.Pullenti.csproj" />
+    <ProjectReference Include="..\Yambr.Analyzer\Yambr.Analyzer.csproj" />
+    <ProjectReference Include="..\Yambr.Email.Example\Yambr.Email.Example.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EP.Analyzer.Biblio.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Biblio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Decree.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Decree.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Goods.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Goods.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Location.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Location.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Misc.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Misc.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Organization.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Organization.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Person.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Person.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Semantic.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Semantic.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Util.Core">
+      <HintPath>..\EP.SdkCore\EP.Analyzer.Util.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Core.Core">
+      <HintPath>..\EP.SdkCore\EP.Core.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Explanatory.Core">
+      <HintPath>..\EP.SdkCore\EP.Explanatory.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Morphology.Core">
+      <HintPath>..\EP.SdkCore\EP.Morphology.Core.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

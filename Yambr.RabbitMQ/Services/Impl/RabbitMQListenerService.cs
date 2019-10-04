@@ -90,12 +90,19 @@ namespace Yambr.RabbitMQ.Services.Impl
             {
                 throw new Exception("Ошибка отправки сообщения." + Environment.NewLine + "Нельзя отправить пустое текстовое сообщение.");
             }
-            var model = NewConnect();
-            var basicProperties = model.CreateBasicProperties();
-            basicProperties.DeliveryMode = 2;
-            basicProperties.Headers = queueObject.Headers;
-            basicProperties.AppId = _rabbitMQSettings.AppId;
-            model.BasicPublish(exchangeName, queueObject.RoutingKey, basicProperties, body);
+
+            using (var connection = NewConnect())
+            {
+                using (var model = connection.CreateModel())
+                {
+
+                    var basicProperties = model.CreateBasicProperties();
+                    basicProperties.DeliveryMode = 2;
+                    basicProperties.Headers = queueObject.Headers;
+                    basicProperties.AppId = _rabbitMQSettings.AppId;
+                    model.BasicPublish(exchangeName, queueObject.RoutingKey, basicProperties, body);
+                }
+            }
         }
 
         public void Init()
@@ -105,7 +112,8 @@ namespace Yambr.RabbitMQ.Services.Impl
             {
                 DisposeConnection();
                 if (_rabbitMQSettings.HostName == null) return;
-                var model = NewConnect();
+                var connection = NewConnect();
+                var model = connection.CreateModel();
                 //Читаем по одному сообщению по умолчанию
                 model.BasicQos(0, 1, true);
 
@@ -143,7 +151,7 @@ namespace Yambr.RabbitMQ.Services.Impl
             }
         }
 
-        private IModel NewConnect()
+        private IConnection NewConnect()
         {
             var connectionFactory = new ConnectionFactory
             {
@@ -157,9 +165,7 @@ namespace Yambr.RabbitMQ.Services.Impl
                 TopologyRecoveryEnabled = false
             };
 
-            var connection = connectionFactory.CreateConnection();
-            var model = connection.CreateModel();
-            return model;
+            return connectionFactory.CreateConnection();
         }
 
 

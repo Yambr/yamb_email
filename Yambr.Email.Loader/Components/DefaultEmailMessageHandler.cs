@@ -6,6 +6,7 @@ using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Yambr.Analyzer.Models;
 using Yambr.Analyzer.Services;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
@@ -47,7 +48,8 @@ namespace Yambr.Email.Loader.Components
             //TODO Разбить на части
             AddOwner(emailMessage);
             FillBody(message, emailMessage);
-            FillHeaders(emailMessage);
+            var text = GetText(emailMessage);
+            FillHeaders(emailMessage, text);
             //заполним кому и от кого
             await FillAddresses(message, emailMessage);
             //заполним направление 
@@ -58,7 +60,32 @@ namespace Yambr.Email.Loader.Components
             await SaveEmbeddedAsync(message, emailMessage);
             //сохраним хэш теги из темы
             FillTagsFromSubject(emailMessage);
+            FillPersons(emailMessage, text);
             return emailMessage;
+        }
+
+        private void FillPersons(EmailMessage emailMessage, string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return;
+            var persons = _mailAnalyzeService.Persons(text);
+            if (!persons.Any()) return;
+            foreach (var contactSummary in emailMessage.From)
+            {
+                UpdateContact(persons, contactSummary);
+            }
+            foreach (var contactSummary in emailMessage.To)
+            {
+                UpdateContact(persons, contactSummary);
+            }
+        }
+
+        private static void UpdateContact(IEnumerable<IPersonReferrent> persons, ContactSummary contactSummary)
+        {
+            var person = persons.FirstOrDefault(c => c.Emails.Contains(contactSummary.Email));
+            if (person != null)
+            {
+                contactSummary.Contact = person.ToContact();
+            }
         }
 
         public Task OnSaveAsync(EmailMessage emailMessage)
@@ -72,13 +99,8 @@ namespace Yambr.Email.Loader.Components
         /// Заполним заголовок (основное содержимое тела)
         /// </summary>
         /// <param name="emailMessage"></param>
-        private void FillHeaders(IBodyPart emailMessage)
+        private void FillHeaders(IBodyPart emailMessage, string text)
         {
-            if (string.IsNullOrWhiteSpace(emailMessage.Body)) return;
-            //Достанем текст письма и если оно в html то приведем его в нормальный вид
-            var text = emailMessage.IsBodyHtml
-                ? _htmlConverterService.ConvertHtml(emailMessage.Body)
-                : emailMessage.Body;
             if (string.IsNullOrWhiteSpace(text)) return;
             var bodyHeaders = _mailAnalyzeService.CommonHeaders(text);
             var headerMain = bodyHeaders.FirstOrDefault();
@@ -97,6 +119,16 @@ namespace Yambr.Email.Loader.Components
                 }
             }
 
+        }
+
+        private string GetText(IBodyPart emailMessage)
+        {
+            if (string.IsNullOrWhiteSpace(emailMessage.Body)) return null;
+            //Достанем текст письма и если оно в html то приведем его в нормальный вид
+            var text = emailMessage.IsBodyHtml
+                ? _htmlConverterService.ConvertHtml(emailMessage.Body)
+                : emailMessage.Body;
+            return text;
         }
 
         #region Заполнение сообщения

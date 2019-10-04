@@ -38,33 +38,37 @@ namespace Yambr.RabbitMQ.Components
 
             var result = default(TResult);
 
-            async Task RunAction()
+            TMessage messageObject = null;
+            async Task<TMessage> RunAction()
             {
-                var messageObject = await BeforeAsync(message, model);
-                if (messageObject == null) return;
+
+                
+                messageObject = await BeforeAsync(message, model);
+                if (messageObject == null) return null;
 
                 result = await RunAsync(messageObject);
+                return messageObject;
             }
 
-           
+
 
             async Task SuccessCallback()
             {
                 //TODO обдумать реализацию
                 if (result != null) //TODO: V3111 https://www.viva64.com/en/w/v3111/ Checking value of 'result' for null will always return false when generic type is instantiated with a value type.
                 {
-                    await AfterAsync(message, result);
+                    await AfterAsync(messageObject, result);
                 }
             }
 
             try
             {
-                await RunAction();
+                var mess = await RunAction();
                 await SuccessCallback();
             }
             catch (Exception e)
             {
-                await ErrorCallBack(message, e);
+                await ErrorCallBack(messageObject, e);
             }
 
         }
@@ -85,7 +89,7 @@ namespace Yambr.RabbitMQ.Components
             return deserializeObject;
         }
 
-        public  abstract Task<TResult> RunAsync(TMessage message);
+        public abstract Task<TResult> RunAsync(TMessage message);
         public virtual Task AfterAsync(TMessage message, TResult result)
         {
             return Task.CompletedTask;

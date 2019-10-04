@@ -4,7 +4,7 @@ namespace Yambr.Email.Common.Models
 {
     public interface IContractor
     {
-       
+
         string Name { get; set; }
         /*
         #region Yandex
@@ -24,27 +24,31 @@ namespace Yambr.Email.Common.Models
         string YandexId { get; set; }
 
             #endregion */
-            /*
-        #region Dadata
+        /*
+    #region Dadata
 
-        AddressData AddressData { get; set; }
-        string BranchCount { get; set; }
-        PartyBranchType? BranchType { get; set; }
+    AddressData AddressData { get; set; }
+    string BranchCount { get; set; }
+    PartyBranchType? BranchType { get; set; }
+
+    string KPP { get; set; }
+    PartyManagementData Management { get; set; }
+   
+    string Okpo { get; set; }
+    string Okved { get; set; }
+    PartyOpfData Opf { get; set; }
+    PartyNameData PartyName { get; set; }
+    PartyStateData State { get; set; }
+    PartyType? Type { get; set; }
+
+
+    #endregion
+    */
         string INN { get; set; }
-        string KPP { get; set; }
-        PartyManagementData Management { get; set; }
         string OGRN { get; set; }
-        string Okpo { get; set; }
-        string Okved { get; set; }
-        PartyOpfData Opf { get; set; }
-        PartyNameData PartyName { get; set; }
-        PartyStateData State { get; set; }
-        PartyType? Type { get; set; }
-
-
-        #endregion
-        */
+        string Description { get; set; }
         ICollection<Domain> Domains { get; set; }
+        string Site { get; set; }
     }
-    
+
 }

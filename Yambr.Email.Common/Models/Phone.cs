@@ -16,7 +16,18 @@ namespace Yambr.Email.Common.Models
         {
             PhoneString = phone;
         }
+        public Phone(string phone, string formattedPhoneString)
+        {
+            PhoneString = phone;
+            FormattedPhoneString = formattedPhoneString;
+        }
         public string PhoneString
+        {
+            get;
+            set;
+        }
+
+        public string FormattedPhoneString
         {
             get;
             set;

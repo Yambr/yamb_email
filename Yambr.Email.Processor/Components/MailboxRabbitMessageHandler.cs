@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Autofac;
 using Microsoft.Extensions.Logging;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
@@ -14,17 +15,18 @@ namespace Yambr.Email.Processor.Components
     [Component]
     class MailboxRabbitMessageHandler : AbstractRabbitMessageHandler<MailBox, EmailLoadingStatus>
     {
-        private readonly IRabbitMQService _rabbitMQService;
+     
         private readonly ILoaderService _loaderService;
+        private readonly ILifetimeScope _lifetimeScope;
 
         public MailboxRabbitMessageHandler(
             ILogger<MailboxRabbitMessageHandler> logger,
-            IRabbitMQService rabbitMQService,
-            ILoaderService loaderService
+            ILoaderService loaderService,
+            ILifetimeScope lifetimeScope
         ) : base(logger)
         {
-            _rabbitMQService = rabbitMQService;
             _loaderService = loaderService;
+            _lifetimeScope = lifetimeScope;
         }
 
         public override string[] Model => new[] { "Mailbox" };
@@ -37,7 +39,8 @@ namespace Yambr.Email.Processor.Components
         {
             mailBox.Password = null;
             mailBox.Status = result;
-            _rabbitMQService.SendMessage(
+            var rabbitMQService = _lifetimeScope.Resolve<IRabbitMQService>();
+            rabbitMQService.SendMessage(
                 RabbitMQConstants.ExchangeEmail,
                 new JsonQueueObject<MailBox>(mailBox, "Mailbox", RabbitMQConstants.RoutingKeyMailboxSuccessLoading));
             return base.AfterAsync(mailBox, result);
@@ -48,7 +51,8 @@ namespace Yambr.Email.Processor.Components
             mailBox.Password = null;
             mailBox.Status = EmailLoadingStatus.Error;
             mailBox.Error = $"Ошибка загрузки из ящика: {exception.Message}\n{exception.StackTrace}";
-            _rabbitMQService.SendMessage(
+            var rabbitMQService = _lifetimeScope.Resolve<IRabbitMQService>();
+            rabbitMQService.SendMessage(
                 RabbitMQConstants.ExchangeEmail,
                 new JsonQueueObject<MailBox>(mailBox, "Mailbox", RabbitMQConstants.RoutingKeyMailboxErrorLoading));
             return base.ErrorCallBack(mailBox, exception);
