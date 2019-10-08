@@ -1,4 +1,6 @@
-﻿namespace Yambr.Email.Common.Models
+﻿using System.Collections.Generic;
+
+namespace Yambr.Email.Common.Models
 {
     public interface IMailBox : ILoadingState
     {
@@ -6,6 +8,5 @@
         string Password { get; set; }
         IServer Server { get; set; }
         ILocalUser User { get; set; }
-      
     }
 }

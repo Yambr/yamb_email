@@ -6,6 +6,6 @@ namespace Yambr.Email.Loader.Services
 {
     public interface IContactService 
     {
-        Task<ContactSummary> GetOrCreateContactSummaryAsync(MailboxAddress mailbox);
+        Task<ContactSummary> CreateContactSummaryAsync(MailboxAddress mailbox);
     }
 }

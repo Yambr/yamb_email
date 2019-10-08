@@ -1,4 +1,6 @@
-﻿namespace Yambr.Analyzer.Models
+﻿using System;
+
+namespace Yambr.Analyzer.Models
 {
     public interface IPhoneReferent
     {

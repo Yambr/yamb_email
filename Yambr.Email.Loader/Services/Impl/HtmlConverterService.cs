@@ -60,7 +60,7 @@ namespace Yambr.Email.Loader.Services.Impl
                     if (html.Length > 0)
                     {
                         var text = HtmlEntity.DeEntitize(html);
-                        outText.Write(text);
+                        outText.Write($" {text} ");
                     }
                     break;
 

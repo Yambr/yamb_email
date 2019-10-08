@@ -28,7 +28,7 @@ namespace Yambr.Email.Loader.Services.Impl
         /// </summary>
         /// <param name="mailbox"></param>
         /// <returns></returns>
-        public async Task<ContactSummary> GetOrCreateContactSummaryAsync(MailboxAddress mailbox)
+        public async Task<ContactSummary> CreateContactSummaryAsync(MailboxAddress mailbox)
         {
             var normalizedEmail = mailbox.Address.ToLowerInvariant();
 
@@ -49,11 +49,7 @@ namespace Yambr.Email.Loader.Services.Impl
             var isNew = false;
             // поискали в контактах
             var contact = CreateContact(normalizedEmail);//создаем контакт по ящику
-                //т.к. контакт найден среди наших или был создан 
-                //то по домену попробуем найти контрагента
-              //  await FillContractorAsync(normalizedEmail, contact);
-              //  await _cacheService.InsertAsync(normalizedEmail, contact, ContactRegion, TimeSpan.FromDays(30));
-           
+
             ExtractAndSetFio(contact, name);
 
             return contact;
@@ -72,28 +68,7 @@ namespace Yambr.Email.Loader.Services.Impl
             return contact;
         }
 
-    /*    /// <summary>
-        /// Заполнить контрагента если не заполнен
-        /// </summary>
-        /// <param name="normalizedEmail"></param>
-        /// <param name="contact"></param>
-        /// <returns></returns>
-        private async Task FillContractorAsync(string normalizedEmail, Contact contact)
-        {
-            if (contact == null) throw new ArgumentNullException(nameof(contact));
-            var mailAddress = normalizedEmail.Split(new[] { "@" }, StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
-            var contractor = await _contractorService.GetOrCreateContractorSummaryByDomainAsync(mailAddress);
-            AddContractor(contact, contractor);
-        }
-/*
-        private static void AddContractor(Contact contact, ContractorSummary contractor)
-        {
-            if (contractor == null) return;
-            if (contact.Contractors.All(c => !c.Equals(contractor)))
-            {
-                contact.Contractors.Add(contractor);
-            }
-        }*/
+  
 
         /// <summary>
         /// Достать фио

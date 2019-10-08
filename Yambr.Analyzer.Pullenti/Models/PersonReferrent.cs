@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EP.Ner;
 using EP.Ner.Address;
 using EP.Ner.Org;
 using EP.Ner.Person;
 using EP.Ner.Uri;
+using Newtonsoft.Json;
 using Yambr.Analyzer.Models;
+using Yambr.Analyzer.Pullenti.Extensions;
 
 namespace Yambr.Analyzer.Pullenti.Models
 {
-    internal class PersonReferrent : IPersonReferrent
+    internal class PersonReferrent : IPersonReferrent, IPersonStat
     {
         public PersonReferrent(PersonReferent personReferent)
         {
@@ -110,9 +113,13 @@ namespace Yambr.Analyzer.Pullenti.Models
 
         private void UpdateDescription(OrganizationReferent organization)
         {
-            var text = organization.Occurrence.OrderByDescending(c => c.EndChar - c.BeginChar).FirstOrDefault()?.GetText();
+            var text = organization.Occurrence
+                .OrderByDescending(c => c.EndChar - c.BeginChar)
+                .FirstOrDefault()?.GetText()?.RemoveWhitespace();
             UpdateDescription($"Организация: {text}\n");
         }
+
+     
 
         private void UpdateDescription(string formattableString)
         {
@@ -142,6 +149,7 @@ namespace Yambr.Analyzer.Pullenti.Models
         public string Position { get; set; }
         public string Description { get; set; }
         public string Site { get; set; }
+        [JsonIgnore]
         public ICompanyReferent Company { get; set; }
         public ICollection<IPhoneReferent> Phones { get; set; }
         public ICollection<string> Emails { get; set; }

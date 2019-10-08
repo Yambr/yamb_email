@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using EP.Ner.Org;
 using Yambr.Analyzer.Models;
+using Yambr.Analyzer.Pullenti.Extensions;
 
 namespace Yambr.Analyzer.Pullenti.Models
 {
@@ -15,7 +16,9 @@ namespace Yambr.Analyzer.Pullenti.Models
         }
         public void Fill(OrganizationReferent orgainzation)
         {
-            Name = orgainzation.Occurrence.OrderByDescending(c=>c.EndChar - c.BeginChar).FirstOrDefault()?.GetText();
+            Name = orgainzation.Occurrence
+                .OrderByDescending(c=>c.EndChar - c.BeginChar)
+                .FirstOrDefault()?.GetText()?.RemoveWhitespace();
             INN = orgainzation.INN;
             OGRN = orgainzation.OGRN;
            // Description = string.Join("\n", orgainzation.Slots.Select(c => c.Value.ToString()));

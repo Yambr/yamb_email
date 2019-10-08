@@ -17,7 +17,7 @@ namespace Yambr.Email.Common.Models
             Email = normalizedEmail;
             Fio = contact.Fio;
         }
-
+        [JsonIgnore]
         public Contact Contact { get; set; }
 
         public string Fio { get; set; }
