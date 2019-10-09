@@ -8,5 +8,8 @@ namespace Yambr.Email.Common.Models
         string Password { get; set; }
         IServer Server { get; set; }
         ILocalUser User { get; set; }
+
+        Dictionary<string, IContact> Contacts { get; set; }
+        Dictionary<string, IContractor> Contractors { get; set; }
     }
 }

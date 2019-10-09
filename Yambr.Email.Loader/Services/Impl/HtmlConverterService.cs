@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using HtmlAgilityPack;
 using Yambr.SDK.ComponentModel;
 
@@ -14,10 +15,12 @@ namespace Yambr.Email.Loader.Services.Impl
             var doc = new HtmlDocument();
             doc.Load(path);
 
-            var sw = new StringWriter();
-            ConvertTo(doc.DocumentNode, sw);
-            sw.Flush();
-            return sw.ToString();
+            using (var sw = new StringWriter())
+            {
+                ConvertTo(doc.DocumentNode, sw);
+                sw.Flush();
+                return sw.ToString();
+            }
         }
 
         public string ConvertHtml(string html)
@@ -25,10 +28,12 @@ namespace Yambr.Email.Loader.Services.Impl
             var doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            var sw = new StringWriter();
-            ConvertTo(doc.DocumentNode, sw);
-            sw.Flush();
-            return sw.ToString();
+            using (var sw = new StringWriter())
+            {
+                ConvertTo(doc.DocumentNode, sw);
+                sw.Flush();
+                return sw.ToString();
+            }
         }
         public void ConvertTo(HtmlNode node, TextWriter outText)
         {
@@ -60,19 +65,20 @@ namespace Yambr.Email.Loader.Services.Impl
                     if (html.Length > 0)
                     {
                         var text = HtmlEntity.DeEntitize(html);
-                        outText.Write($" {text} ");
+                        outText.Write($"{text} ");
                     }
                     break;
 
                 case HtmlNodeType.Element:
-                    if (node.Name == "p" || node.Name == "pre" || node.Name == "br" || node.Name == "div")
+                   /* if (IsNewLineBlock(node))
                     {
                         outText.Write("\n\r");
                     }
                     else
                     {
                         outText.Write(" ");
-                    }
+                    }*/
+
                     if (node.HasChildNodes)
                     {
                         ConvertContentTo(node, outText);
@@ -80,6 +86,12 @@ namespace Yambr.Email.Loader.Services.Impl
                     break;
             }
         }
+
+      /*  private static bool IsNewLineBlock(HtmlNode node)
+        {
+            if (node == null) return false;
+            return node.Name == "p" || node.Name == "pre" || node.Name == "div" || node.Name == "br";
+        }*/
 
         #endregion
 

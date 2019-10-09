@@ -43,6 +43,22 @@ namespace Yambr.Email.Processor.Components
             rabbitMQService.SendMessage(
                 RabbitMQConstants.ExchangeEmail,
                 new JsonQueueObject<MailBox>(mailBox, "Mailbox", RabbitMQConstants.RoutingKeyMailboxSuccessLoading));
+
+
+            foreach (var contact in mailBox.Contacts)
+            {
+                rabbitMQService.SendMessage(
+                    RabbitMQConstants.ExchangeEmail,
+                    new JsonQueueObject<IContact>(contact.Value, "Contact", RabbitMQConstants.RoutingKeyEmailEventCreated
+                         ));
+            }
+            foreach (var contractor in mailBox.Contractors)
+            {
+                rabbitMQService.SendMessage(
+                    RabbitMQConstants.ExchangeEmail,
+                    new JsonQueueObject<IContractor>(contractor.Value, "Contractor", RabbitMQConstants.RoutingKeyEmailEventCreated
+                          ));
+            }
             return base.AfterAsync(mailBox, result);
         }
 

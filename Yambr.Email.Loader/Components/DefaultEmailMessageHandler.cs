@@ -6,6 +6,7 @@ using Fizzler.Systems.HtmlAgilityPack;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Newtonsoft.Json;
 using Yambr.Analyzer.Models;
 using Yambr.Analyzer.Services;
 using Yambr.Email.Common.Enums;
@@ -13,6 +14,8 @@ using Yambr.Email.Common.Models;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Extensions;
 using Yambr.Email.Loader.Services;
+using Yambr.RabbitMQ.Models;
+using Yambr.RabbitMQ.Services;
 using Yambr.SDK.ComponentModel;
 using Yambr.SDK.Extensions;
 
@@ -79,22 +82,57 @@ namespace Yambr.Email.Loader.Components
             }
         }
 
-        private static void UpdateContact(IEnumerable<IPersonReferrent> persons, ContactSummary contactSummary)
+        private void UpdateContact(IEnumerable<IPersonReferrent> persons, ContactSummary contactSummary)
         {
-            var person = persons.FirstOrDefault(c => c.Emails.Contains(contactSummary.Email));
-            if (person != null)
-            {
-                contactSummary.Contact = person.ToContact();
-            }
+            var contactSummaryEmail = contactSummary.Email;
+            var person = persons.FirstOrDefault(c => c.Emails.Contains(contactSummaryEmail));
+            if (person == null) return;
+            var newContact = person.ToContact();
+            MailBox.Contacts[contactSummaryEmail] = Merge(newContact, contactSummaryEmail);
+            if (newContact.Contractor == null) return;
+            var domain = Domain(contactSummaryEmail);
+            MailBox.Contractors[domain] = Merge((Contractor)newContact.Contractor, domain);
         }
 
+        private Contact Merge(Contact newContact, string contactSummaryEmail)
+        {
+            if(MailBox.Contacts.TryGetValue(contactSummaryEmail, out IContact oldContact))
+            {
+               var oldPhones = oldContact.Phones.Except(newContact.Phones).ToList();
+               if (oldPhones.Any())
+               {
+                   foreach (var oldPhone in oldPhones)
+                   {
+                       newContact.Phones.Add(oldPhone);
+                   }
+               }
+               //TODO email?
+            }
+
+            return newContact;
+        }
+        private Contractor Merge(Contractor contractor, string domain)
+        {
+            contractor.Domains = new List<Domain>()
+            {
+                new Domain()
+                {
+                    DomainString = domain
+                }
+            };
+            return contractor;
+        }
+
+        private static string Domain(string email)
+        {
+            return email.Split(new[] { '@' }, StringSplitOptions.None)[1]?.ToLowerInvariant();
+        }
         public Task OnSaveAsync(EmailMessage emailMessage)
         {
             _logger.Info($"{emailMessage.Hash} {emailMessage.Subject}");
-
             return Task.CompletedTask;
         }
-
+        
         /// <summary>
         /// Заполним заголовок (основное содержимое тела)
         /// </summary>
@@ -223,7 +261,7 @@ namespace Yambr.Email.Loader.Components
             {
                 foreach (var mailbox in message.From.Mailboxes)
                 {
-                    emailMessage.From.Add(await _contactService.GetOrCreateContactSummaryAsync(mailbox));
+                    emailMessage.From.Add(await _contactService.CreateContactSummaryAsync(mailbox));
                 }
             }
 
@@ -231,7 +269,7 @@ namespace Yambr.Email.Loader.Components
             {
                 foreach (var mailbox in message.To.Mailboxes)
                 {
-                    emailMessage.To.Add(await _contactService.GetOrCreateContactSummaryAsync(mailbox));
+                    emailMessage.To.Add(await _contactService.CreateContactSummaryAsync(mailbox));
                 }
             }
 
@@ -239,7 +277,7 @@ namespace Yambr.Email.Loader.Components
             {
                 foreach (var mailbox in message.Cc.Mailboxes)
                 {
-                    emailMessage.To.Add(await _contactService.GetOrCreateContactSummaryAsync(mailbox));
+                    emailMessage.To.Add(await _contactService.CreateContactSummaryAsync(mailbox));
                 }
             }
 
@@ -247,7 +285,7 @@ namespace Yambr.Email.Loader.Components
             {
                 foreach (var mailbox in message.Bcc.Mailboxes)
                 {
-                    emailMessage.To.Add(await _contactService.GetOrCreateContactSummaryAsync(mailbox));
+                    emailMessage.To.Add(await _contactService.CreateContactSummaryAsync(mailbox));
                 }
             }
         }
