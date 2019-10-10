@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using HtmlAgilityPack;
+using Yambr.Email.Loader.Extensions;
 using Yambr.SDK.ComponentModel;
 
 namespace Yambr.Email.Loader.Services.Impl
@@ -12,99 +13,70 @@ namespace Yambr.Email.Loader.Services.Impl
 
         public string Convert(string path)
         {
-            var doc = new HtmlDocument();
-            doc.Load(path);
-
-            using (var sw = new StringWriter())
-            {
-                ConvertTo(doc.DocumentNode, sw);
-                sw.Flush();
-                return sw.ToString();
-            }
+            return FormatLineBreaks(File.ReadAllText(path));
         }
 
         public string ConvertHtml(string html)
         {
-            var doc = new HtmlDocument();
+            return FormatLineBreaks(html);
+        }
+
+        public static string FormatLineBreaks(string html)
+        {
+            //first - remove all the existing '\n' from HTML
+            //they mean nothing in HTML, but break our logic
+            html = html.Replace("\r", "").Replace("\n", " ");
+
+            //now create an Html Agile Doc object
+            HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
 
-            using (var sw = new StringWriter())
+            //remove comments, head, style and script tags
+            var docDocumentNode = doc.DocumentNode;
+            foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//comment() | //script | //style | //head"))
             {
-                ConvertTo(doc.DocumentNode, sw);
-                sw.Flush();
-                return sw.ToString();
+                node.ParentNode.RemoveChild(node);
             }
-        }
-        public void ConvertTo(HtmlNode node, TextWriter outText)
-        {
-            switch (node.NodeType)
+
+            //now remove all "meaningless" inline elements like "span"
+            foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//span | //label | //a")) //add "b", "i" if required
             {
-                case HtmlNodeType.Comment:
-                    // don't output comments
-                    break;
-
-                case HtmlNodeType.Document:
-                    ConvertContentTo(node, outText);
-                    break;
-
-                case HtmlNodeType.Text:
-                    // script and style must not be output
-                    var parentName = node.ParentNode.Name;
-                    // get text
-                    var html = ((HtmlTextNode)node).Text;
-                    if ((parentName == "script") || (parentName == "style"))
-                    {
-                        break;
-                    }
-
-                    // is it in fact a special closing node output as text?
-                    if (HtmlNode.IsOverlappedClosingElement(html))
-                        break;
-
-                    // check the text is meaningful and not a bunch of whitespaces
-                    if (html.Length > 0)
-                    {
-                        var text = HtmlEntity.DeEntitize(html);
-                        outText.Write($"{text} ");
-                    }
-                    break;
-
-                case HtmlNodeType.Element:
-                   /* if (IsNewLineBlock(node))
-                    {
-                        outText.Write("\n\r");
-                    }
-                    else
-                    {
-                        outText.Write(" ");
-                    }*/
-
-                    if (node.HasChildNodes)
-                    {
-                        ConvertContentTo(node, outText);
-                    }
-                    break;
+                node.ParentNode.ReplaceChild(HtmlNode.CreateNode($"<fake> {node.InnerHtml} </fake>"), node);
             }
+
+            //block-elements - convert to line-breaks
+            foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//p | //div")) //you could add more tags here
+            {
+                //we add a "\n" ONLY if the node contains some plain text as "direct" child
+                //meaning - text is not nested inside children, but only one-level deep
+
+                //use XPath to find direct "text" in element
+                var txtNode = node.SelectSingleNode("text()");
+
+                //no "direct" text - NOT ADDDING the \n !!!!
+                if (txtNode == null || txtNode.InnerHtml.Trim() == "") continue;
+
+                //"surround" the node with line breaks
+                node.ParentNode.InsertBefore(doc.CreateTextNode("\r\n"), node);
+                node.ParentNode.InsertAfter(doc.CreateTextNode("\r\n"), node);
+            }
+
+            //todo: might need to replace multiple "\n\n" into one here, I'm still testing...
+
+            //now BR tags - simply replace with "\n" and forget
+            foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//br"))
+                node.ParentNode.ReplaceChild(doc.CreateTextNode("\r\n"), node);
+
+            //finally - return the text which will have our inserted line-breaks in it
+            return   HtmlEntity.DeEntitize(docDocumentNode.InnerText.Trim());
+
+            //todo - you should probably add "&code;" processing, to decode all the &nbsp; and such
         }
 
-      /*  private static bool IsNewLineBlock(HtmlNode node)
-        {
-            if (node == null) return false;
-            return node.Name == "p" || node.Name == "pre" || node.Name == "div" || node.Name == "br";
-        }*/
+
+     
 
         #endregion
 
-        #region Private Methods
-
-        private void ConvertContentTo(HtmlNode node, TextWriter outText)
-        {
-            foreach (var subnode in node.ChildNodes)
-            {
-                ConvertTo(subnode, outText);
-            }
-        }
-
-        #endregion
     }
 }

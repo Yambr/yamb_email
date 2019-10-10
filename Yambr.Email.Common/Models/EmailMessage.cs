@@ -18,7 +18,6 @@ namespace Yambr.Email.Common.Models
             List<EmbeddedSummary> embedded) :this()
         {
             Owners = owners;
-            CommonHeaders = commonHeaders;
             From = @from;
             To = to;
             Attachments = attachments;
@@ -28,7 +27,6 @@ namespace Yambr.Email.Common.Models
         public EmailMessage()
         {
             Owners = new List<MailOwnerSummary>();
-            CommonHeaders = new List<HeaderSummary>();
             From = new List<ContactSummary>();
             To = new List<ContactSummary>();
             Attachments = new List<AttachmentSummary>();
@@ -39,8 +37,8 @@ namespace Yambr.Email.Common.Models
         public string Hash { get; set; }
         public ICollection<MailOwnerSummary> Owners { get; set; }
         public string MainHeader { get; set; }
-        public ICollection<HeaderSummary> CommonHeaders { get; set; }
         public string Body { get; set; }
+        public string Text { get; set; }
         public bool IsBodyHtml { get; set; }
         public Direction Direction { get; set; }
         public ICollection<ContactSummary> From { get; set; }

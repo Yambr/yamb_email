@@ -50,9 +50,10 @@ namespace Yambr.Email.Loader.Components
         {
             //TODO Разбить на части
             AddOwner(emailMessage);
+
             FillBody(message, emailMessage);
-            var text = GetText(emailMessage);
-            FillHeaders(emailMessage, text);
+
+            FillHeaders(emailMessage);
             //заполним кому и от кого
             await FillAddresses(message, emailMessage);
             //заполним направление 
@@ -63,14 +64,14 @@ namespace Yambr.Email.Loader.Components
             await SaveEmbeddedAsync(message, emailMessage);
             //сохраним хэш теги из темы
             FillTagsFromSubject(emailMessage);
-            FillPersons(emailMessage, text);
+            FillPersons(emailMessage);
             return emailMessage;
         }
 
-        private void FillPersons(EmailMessage emailMessage, string text)
+        private void FillPersons(EmailMessage emailMessage)
         {
-            if (string.IsNullOrWhiteSpace(text)) return;
-            var persons = _mailAnalyzeService.Persons(text);
+            if (string.IsNullOrWhiteSpace(emailMessage.Text)) return;
+            var persons = _mailAnalyzeService.Persons(emailMessage.Text);
             if (!persons.Any()) return;
             foreach (var contactSummary in emailMessage.From)
             {
@@ -137,15 +138,15 @@ namespace Yambr.Email.Loader.Components
         /// Заполним заголовок (основное содержимое тела)
         /// </summary>
         /// <param name="emailMessage"></param>
-        private void FillHeaders(IBodyPart emailMessage, string text)
+        private void FillHeaders(IBodyPart emailMessage)
         {
-            if (string.IsNullOrWhiteSpace(text)) return;
-            var bodyHeaders = _mailAnalyzeService.CommonHeaders(text);
+            if (string.IsNullOrWhiteSpace(emailMessage.Text)) return;
+            var bodyHeaders = _mailAnalyzeService.CommonHeaders(emailMessage.Text);
             var headerMain = bodyHeaders.FirstOrDefault();
             if (string.IsNullOrWhiteSpace(headerMain?.Text)) return;
             //сохраним
             emailMessage.MainHeader = headerMain.Text;
-            bodyHeaders.Remove(headerMain);
+           /* bodyHeaders.Remove(headerMain);
             if (bodyHeaders.Any())
             {
                 foreach (var mailReferent in bodyHeaders)
@@ -155,7 +156,7 @@ namespace Yambr.Email.Loader.Components
                         emailMessage.CommonHeaders.Add(new HeaderSummary(mailReferent.Text));
                     }
                 }
-            }
+            }*/
 
         }
 
@@ -247,6 +248,7 @@ namespace Yambr.Email.Loader.Components
                 RemoveBadNodes(ExtractTextBody(message)) :
                 ExtractTextBody(message);
 
+            emailMessage.Text = GetText(emailMessage);
         }
 
         /// <summary>

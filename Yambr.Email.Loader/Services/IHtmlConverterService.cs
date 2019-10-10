@@ -7,6 +7,5 @@ namespace Yambr.Email.Loader.Services
     {
         string Convert(string path);
         string ConvertHtml(string html);
-        void ConvertTo(HtmlNode node, TextWriter outText);
     }
 }

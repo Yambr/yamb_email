@@ -15,7 +15,7 @@ namespace Yambr.SDK.Autofac
         protected override void Load(ContainerBuilder builder)
         {
             var assembly = this.GetType();
-            Console.WriteLine(assembly.FullName);
+          //  Console.WriteLine(assembly.FullName);
             foreach (var type in assembly.Assembly.GetTypes())
             {
                 if (!type.IsClass) continue;
@@ -37,7 +37,7 @@ namespace Yambr.SDK.Autofac
         private static void RegisterAsService(ContainerBuilder builder, Type type, Attribute[] serviceAtributes)
         {
             var registrationBuilder = builder.RegisterType(type).AsImplementedInterfaces();
-            Console.WriteLine(" registered  service " + type.FullName);
+          //  Console.WriteLine(" registered  service " + type.FullName);
             RegisterScope(registrationBuilder, serviceAtributes.Cast<ServiceAttribute>().FirstOrDefault()?.Scope);
         }
 
@@ -46,7 +46,7 @@ namespace Yambr.SDK.Autofac
            
             var interfaces = type.GetInterfaces();
 
-            Console.WriteLine(" registered  component " + type.FullName);
+         //   Console.WriteLine(" registered  component " + type.FullName);
             if (interfaces.Any())
             {
                 foreach (var baseInterface in interfaces)

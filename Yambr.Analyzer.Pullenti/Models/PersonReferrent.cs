@@ -56,7 +56,7 @@ namespace Yambr.Analyzer.Pullenti.Models
                 switch (uriReferent.Scheme)
                 {
                     case "mailto":
-                        Emails.Add(uriReferent.Value);
+                            Emails.Add(uriReferent.Value);
                         break;
                     case "http":
                     case "https":
@@ -83,7 +83,11 @@ namespace Yambr.Analyzer.Pullenti.Models
                 UpdateDescription($"Адрес: {addressReferent}");
             }
         }
-
+        private static bool HasRussian(string name)
+        {
+            return name != null &&
+                   name.Any(c => (c >= 'А' && c <= 'я') || c == 'ё' || c == 'Ё');
+        }
         private void UpdateAttributes(Slot slot)
         {
             if (!(slot.Value is PersonPropertyReferent personPropertyReferent)) return;

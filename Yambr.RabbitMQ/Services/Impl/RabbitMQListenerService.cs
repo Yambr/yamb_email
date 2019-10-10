@@ -11,6 +11,7 @@ using Yambr.RabbitMQ.Exceptions;
 using Yambr.RabbitMQ.ExtensionPoints;
 using Yambr.RabbitMQ.Models;
 using Yambr.SDK.ComponentModel;
+using Yambr.SDK.Extensions;
 
 namespace Yambr.RabbitMQ.Services.Impl
 {
@@ -40,25 +41,47 @@ namespace Yambr.RabbitMQ.Services.Impl
             _rabbitMQSettings = rabbitMQSettings;
             _logger = logger;
             _map = new ConcurrentDictionary<string, IEnumerable<IRabbitMessageHandler>>();
-            Connections = new List<IModel>();
+            Models = new List<IModel>();
+            Connections = new List<IConnection>();
         }
 
-        public ICollection<IModel> Connections { get; }
+        public ICollection<IModel> Models { get; }
+        public ICollection<IConnection> Connections { get; }
 
-        private void DisposeConnection(IModel connection)
+        private void DisposeConnection(IConnection connection)
         {
-            if (connection == null) return;
-            if (connection.IsOpen)
+            if (connection != null)
             {
-                connection.Close();
-            }
+                if (connection.IsOpen)
+                {
+                    connection.Close();
+                }
 
-            connection.Dispose();
-            _logger.LogDebug($"Connection #{connection.ChannelNumber} closed.");
+                connection.Dispose();
+                _logger.LogDebug($"Connection #{connection.Endpoint} closed.");
+            }
+        }
+
+        private void DisposeModel(IModel model)
+        {
+            if (model != null)
+            {
+                if (model.IsOpen)
+                {
+                    model.Close();
+                }
+
+                model.Dispose();
+                _logger.LogDebug($"Connection #{model.ChannelNumber} closed.");
+            }
         }
 
         public void DisposeConnection()
         {
+            foreach (var model in Models)
+            {
+                DisposeModel(model);
+            }
             foreach (var connection in Connections)
             {
                 DisposeConnection(connection);
@@ -142,7 +165,8 @@ namespace Yambr.RabbitMQ.Services.Impl
 
 
 
-                Connections.Add(model);
+                Models.Add(model);
+                Connections.Add(connection);
             }
             catch (Exception ex)
             {
@@ -162,10 +186,47 @@ namespace Yambr.RabbitMQ.Services.Impl
                 UserName = _rabbitMQSettings.UserName,
                 Password = _rabbitMQSettings.Password,
                 AutomaticRecoveryEnabled = true,
-                TopologyRecoveryEnabled = false
+                TopologyRecoveryEnabled = false,
+                RequestedHeartbeat = 60
             };
+            var newConnect = connectionFactory.CreateConnection();
+            newConnect.CallbackException += NewConnectOnCallbackException; 
+            newConnect.ConnectionBlocked += NewConnectOnConnectionBlocked;
+            newConnect.ConnectionRecoveryError+= NewConnectOnConnectionRecoveryError;
+            newConnect.ConnectionShutdown+=NewConnectOnConnectionShutdown;
+            newConnect.ConnectionUnblocked+=NewConnectOnConnectionUnblocked;
+            newConnect.RecoverySucceeded+=NewConnectOnRecoverySucceeded;
+            return newConnect;
+        }
 
-            return connectionFactory.CreateConnection();
+        private void NewConnectOnRecoverySucceeded(object sender, EventArgs e)
+        {
+            _logger.LogError($"Подключение восстановлено {e}");
+        }
+
+        private void NewConnectOnConnectionUnblocked(object sender, EventArgs e)
+        {
+            _logger.LogError($"Подключение разблокировано {e}");
+        }
+
+        private void NewConnectOnConnectionShutdown(object sender, ShutdownEventArgs e)
+        {
+            _logger.LogError($"Подключение отключено {e.Cause}");
+        }
+
+        private void NewConnectOnConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs e)
+        {
+            _logger.Error(e.Exception, $"Ошибка восстановления работы");
+        }
+
+        private void NewConnectOnConnectionBlocked(object sender, ConnectionBlockedEventArgs e)
+        {
+            _logger.LogError($"Подключение блокировано {e.Reason}");
+        }
+
+        private void NewConnectOnCallbackException(object sender, CallbackExceptionEventArgs e)
+        {
+            _logger.Error(e.Exception, $"Ошибка при работе с очередью");
         }
 
 
