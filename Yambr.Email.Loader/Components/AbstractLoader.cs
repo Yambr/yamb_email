@@ -47,8 +47,6 @@ namespace Yambr.Email.Loader.Components
           
             
             await _emailMesageService.SaveMessageAsync(mailBox, message);
-            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
-            GC.Collect(1, GCCollectionMode.Forced);
         }
 
         protected async Task AuthorizeAsync(IMailService client, IMailBox mailBox)
