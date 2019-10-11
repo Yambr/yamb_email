@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MailKit;
 using Microsoft.Extensions.Logging;
@@ -42,7 +43,12 @@ namespace Yambr.Email.Loader.Components
         /// <returns></returns>
         public async Task SaveMessageAsync(IMailBox mailBox, MimeMessage message)
         {
+
+          
+            
             await _emailMesageService.SaveMessageAsync(mailBox, message);
+            Console.WriteLine(Thread.CurrentThread.ManagedThreadId);
+            GC.Collect(1, GCCollectionMode.Forced);
         }
 
         protected async Task AuthorizeAsync(IMailService client, IMailBox mailBox)

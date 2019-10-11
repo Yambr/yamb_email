@@ -193,7 +193,7 @@ namespace Yambr.RabbitMQ.Services.Impl
             newConnect.CallbackException += NewConnectOnCallbackException; 
             newConnect.ConnectionBlocked += NewConnectOnConnectionBlocked;
             newConnect.ConnectionRecoveryError+= NewConnectOnConnectionRecoveryError;
-            newConnect.ConnectionShutdown+=NewConnectOnConnectionShutdown;
+          //  newConnect.ConnectionShutdown+=NewConnectOnConnectionShutdown;
             newConnect.ConnectionUnblocked+=NewConnectOnConnectionUnblocked;
             newConnect.RecoverySucceeded+=NewConnectOnRecoverySucceeded;
             return newConnect;
