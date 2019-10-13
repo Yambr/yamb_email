@@ -14,6 +14,11 @@ namespace Yambr.Analyzer.Pullenti.Models
 {
     internal class PersonReferrent : IPersonReferrent, IPersonStat
     {
+        public override string ToString()
+        {
+            return $"{FirstName} {LastName} {MiddleName} {Emails.FirstOrDefault()} {Company}";
+        }
+
         public PersonReferrent(PersonReferent personReferent)
         {
             Phones = new List<IPhoneReferent>();

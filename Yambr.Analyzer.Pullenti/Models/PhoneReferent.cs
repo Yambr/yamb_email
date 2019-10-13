@@ -31,5 +31,10 @@ namespace Yambr.Analyzer.Pullenti.Models
         public string FormattedPhoneString { get; set; }
 
         public string PhoneString { get; set; }
+
+        public override string ToString()
+        {
+            return $"{PhoneString}";
+        }
     }
 }

@@ -29,5 +29,10 @@ namespace Yambr.Analyzer.Pullenti.Models
         public string OGRN { get; set; }
         public string Description { get; set; }
         public string Site { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Name} {INN} {OGRN} {Description} {Site}";
+        }
     }
 }

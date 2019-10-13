@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using MimeKit;
 using Yambr.DistributedCache.Services;
 using Yambr.Email.Common.Models;
+using Yambr.Email.Loader.Exceptions;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Extensions;
 using Yambr.SDK.ComponentModel;
@@ -91,15 +92,23 @@ namespace Yambr.Email.Loader.Services.Impl
                 builder.Register(c => mailBox).As<IMailBox>();
             }))
             {
-                var messageHandlers = scope.Resolve<IEnumerable<IEmailMessageHandler>>();
-                var emailMessageHandlers = messageHandlers as IEmailMessageHandler[] ?? messageHandlers.ToArray();
-                foreach (var emailMessageHandler in emailMessageHandlers)
+                try
                 {
-                    await emailMessageHandler.OnCreate(message, emailMessage);
+                    var messageHandlers = scope.Resolve<IEnumerable<IEmailMessageHandler>>();
+                    var emailMessageHandlers = messageHandlers as IEmailMessageHandler[] ?? messageHandlers.ToArray();
+                    foreach (var emailMessageHandler in emailMessageHandlers)
+                    {
+                        await emailMessageHandler.OnCreate(message, emailMessage);
+                    }
+
+                    foreach (var emailMessageHandler in emailMessageHandlers)
+                    {
+                        await emailMessageHandler.OnSaveAsync(emailMessage);
+                    }
                 }
-                foreach (var emailMessageHandler in emailMessageHandlers)
+                catch (EmailLoaderException exception)
                 {
-                    await emailMessageHandler.OnSaveAsync(emailMessage);
+                    _logger.Log(LogLevel.Error, exception, $"Ошибка при обработке письма {messageHash}");
                 }
             }
 

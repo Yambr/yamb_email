@@ -11,6 +11,7 @@ using Yambr.Analyzer.Models;
 using Yambr.Analyzer.Services;
 using Yambr.Email.Common.Enums;
 using Yambr.Email.Common.Models;
+using Yambr.Email.Loader.Exceptions;
 using Yambr.Email.Loader.ExtensionPoints;
 using Yambr.Email.Loader.Extensions;
 using Yambr.Email.Loader.Services;
@@ -68,18 +69,21 @@ namespace Yambr.Email.Loader.Components
             return emailMessage;
         }
 
-        private void FillPersons(EmailMessage emailMessage)
+        public void FillPersons(EmailMessage emailMessage)
         {
             if (string.IsNullOrWhiteSpace(emailMessage.Text)) return;
             var persons = _mailAnalyzeService.Persons(emailMessage.Text);
-            if (!persons.Any()) return;
-            foreach (var contactSummary in emailMessage.From)
+            if (persons.Any())
             {
-                UpdateContact(persons, contactSummary);
-            }
-            foreach (var contactSummary in emailMessage.To)
-            {
-                UpdateContact(persons, contactSummary);
+                foreach (var contactSummary in emailMessage.From)
+                {
+                    UpdateContact(persons, contactSummary);
+                }
+
+                foreach (var contactSummary in emailMessage.To)
+                {
+                    UpdateContact(persons, contactSummary);
+                }
             }
         }
 
@@ -247,8 +251,20 @@ namespace Yambr.Email.Loader.Components
             emailMessage.Body = emailMessage.IsBodyHtml ?
                 RemoveBadNodes(ExtractTextBody(message)) :
                 ExtractTextBody(message);
-
+            //TODO вынести в настройи
+            const int max = 100000;
+            if(string.IsNullOrWhiteSpace(emailMessage.Body))
+                throw new EmptyMessageException($"Пустое письмо {message.Date}");
+            if ((emailMessage.IsBodyHtml && emailMessage.Body.Length > max*2) || 
+                (!emailMessage.IsBodyHtml && emailMessage.Body.Length > max))
+            {
+                throw new TooBigMessageException($"Слишком большое письмо {message.Date} - {emailMessage.Body.Length} символов (макс {max})");
+            }
             emailMessage.Text = GetText(emailMessage);
+            if (emailMessage.Text.Length > max)
+            {
+                throw new TooBigMessageException($"Слишком большое письмо {message.Date} - {emailMessage.Body.Length} символов (макс {max})");
+            }
         }
 
         /// <summary>

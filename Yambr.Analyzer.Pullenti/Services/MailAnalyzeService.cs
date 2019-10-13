@@ -71,18 +71,28 @@ namespace Yambr.Analyzer.Pullenti.Services
                
             }
 
+           
+
             UpdateByStat(persons);
 
             return persons.Cast<IPersonReferrent>().ToList();
         }
-
+        
         private void UpdateByStat(IEnumerable<PersonReferrent> persons)
         {
+            //TODO убрать лишнее
+           
             foreach (var personReferrent in persons)
             {
                 var email = personReferrent.Emails?.FirstOrDefault();
-
                 if (string.IsNullOrWhiteSpace(email)) continue;
+
+                if (personReferrent.Emails.Count > 1)
+                {
+                        personReferrent.Emails.Clear();
+                        personReferrent.Emails.Add(email);
+                }
+                
                 _valueStatsService
                     .UpdateStatsAsync<IPersonStat>(personReferrent, email)
                     .Wait(Timeout);
