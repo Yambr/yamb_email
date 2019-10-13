@@ -128,8 +128,8 @@ namespace Yambr.Email.Example.Components
                 var persons = _mailAnalyzeService.Persons(convertHtml);
                 if (persons.Any(c => c.Emails.Any(e =>
                 {
-                    var ok = (e.EndsWith(".ru") || e.EndsWith(".com") || e.EndsWith(".info") || e.EndsWith(".su") ||
-                              e.EndsWith(".org") || e.EndsWith(".tech") || e.EndsWith("D297BED0"));
+                    var ok = (e.EndsWith(".ru") || e.EndsWith(".com") || e.EndsWith(".net") || e.EndsWith(".info") || e.EndsWith(".su") ||
+                              e.EndsWith(".org") || e.EndsWith(".tech") || e.EndsWith("D297BED0") || e.EndsWith("ae") || e.EndsWith("015d1c70"));
                     if (!ok)
                     {
                         Console.WriteLine(file);
@@ -156,7 +156,7 @@ namespace Yambr.Email.Example.Components
                 }
 
                 stopwatch.Stop();
-                Statictics.Add(i, GC.GetTotalMemory(true));
+                Statictics.Add(i, stopwatch.ElapsedMilliseconds);
                 
                 Console.WriteLine($"{i} {stopwatch.ElapsedMilliseconds}");
             }

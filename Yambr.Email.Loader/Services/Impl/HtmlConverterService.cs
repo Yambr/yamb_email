@@ -108,10 +108,10 @@ namespace Yambr.Email.Loader.Services.Impl
             //todo: might need to replace multiple "\n\n" into one here, I'm still testing...
            
             //now remove all "meaningless" inline elements like "span"
-         /*   foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//span | //label | //a")) //add "b", "i" if required
+            foreach (HtmlNode node in docDocumentNode.SafeSelectNodes("//span | //label | //a")) //add "b", "i" if required
             {
-                node.ParentNode.ReplaceChild(HtmlNode.CreateNode($"<fake> {node.InnerHtml.Trim()} </fake>"), node);
-            }*/
+                node.InnerHtml = $" {node.InnerHtml} ";
+            }
 
            
 
