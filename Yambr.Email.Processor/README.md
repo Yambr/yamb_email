@@ -5,7 +5,7 @@ Mailbox
 {
 	"LastStartTimeUtc": "2015-05-10",
 	"Login": "yambroskin@impeltech.ru",
-	"Password": "Heh8uhik",
+	"Password": "******",
 	"Server": {
 		"Host": "imap.yandex.ru",
 		"Port": 993,
